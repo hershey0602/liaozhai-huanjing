@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="theme-color" content="#f5f0e7">
+    <title>聊斋幻城 · 南山花坞 · 文字山水</title>
+    <style>
+      :root { --ink:#534b42; --green:#665e50; --gold:#9d8061; --paper:#f5f0e7; }
+      * { box-sizing:border-box; }
+      html,body { width:100%; height:100%; margin:0; overflow:hidden; background:#f5f0e7; }
+      body { font-family:"KaiTi","STKaiti","Noto Serif CJK SC","Songti SC",serif; color:var(--ink); }
+      button { font:inherit; }
+      #stage { position:fixed; inset:0; }
+      #stage canvas { display:block; touch-action:none; }
+      .atmosphere { position:fixed; inset:0; pointer-events:none; background:radial-gradient(ellipse at 55% 19%,rgba(255,252,242,.21),transparent 48%),linear-gradient(to bottom,rgba(250,245,232,.08),transparent 43%,rgba(99,86,64,.045)); }
+      .paper-grain { position:fixed; inset:0; pointer-events:none; opacity:.10; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E"); }
+      .topbar { position:fixed; top:20px; left:26px; right:26px; z-index:10; display:flex; justify-content:space-between; align-items:flex-start; pointer-events:none; }
+      .brand small { display:block; font-size:11px; letter-spacing:.35em; color:#9a7f67; }
+      .brand strong { display:block; margin-top:4px; font-weight:500; font-size:29px; letter-spacing:.13em; text-shadow:0 1px 0 #fff8; }
+      .hint { position:fixed; z-index:9; right:25px; bottom:178px; max-width:250px; color:#6b6256; font-size:13px; line-height:1.55; text-align:right; text-shadow:0 1px 1px #fff; }
+      .legend { position:fixed; z-index:9; top:88px; right:26px; color:#827767; font-size:13px; letter-spacing:.15em; writing-mode:vertical-rl; opacity:.8; pointer-events:none; }
+      .move-controls { position:fixed; z-index:11; right:25px; bottom:25px; display:grid; grid-template-columns:repeat(3,48px); gap:6px; }
+      .move-controls button { width:48px; height:48px; border:1px solid #8274628c; border-radius:50%; background:#f8f2e8dc; color:#63594b; font-size:23px; cursor:pointer; box-shadow:0 3px 12px #3b302420; }
+      .move-controls button:hover,.move-controls button:focus-visible { background:#fff9ee; outline:2px solid #a67a39; }
+      .move-controls button:active { transform:scale(.94); }
+      .move-controls .up { grid-column:2; }
+      .move-controls .left { grid-column:1; grid-row:2; }
+      .move-controls .down { grid-column:2; grid-row:2; }
+      .move-controls .right { grid-column:3; grid-row:2; }
+      .encounter-caption { position:fixed; z-index:12; left:50%; bottom:72px; transform:translate(-50%,8px); min-width:280px; max-width:min(580px,calc(100vw - 32px)); padding:12px 24px; border:1px solid #b9a79299; border-radius:28px; background:#f8f2e9f5; box-shadow:0 5px 28px #4b3c2a24; color:#4e4035; font-size:18px; letter-spacing:.12em; line-height:1.6; text-align:center; opacity:0; pointer-events:none; transition:opacity .45s ease,transform .45s ease; }
+      .encounter-caption.visible { opacity:1; transform:translate(-50%,0); }
+      .ancient-tree-tag { position:fixed; z-index:9; left:50%; top:50%; transform:translate(-50%,-100%); padding:6px 11px; border:1px solid #b7a492ad; border-radius:16px; background:#f7f0e6eb; box-shadow:0 3px 14px #4b3c2a1f; color:#6a5148; font-size:14px; letter-spacing:.13em; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .3s ease; }
+      .ancient-tree-tag.visible { opacity:1; }
+      .ancient-tree-tag::after { content:''; position:absolute; left:50%; top:100%; height:19px; border-left:1px solid #a58a7999; }
+      .story-progress { position:fixed;z-index:12;left:26px;bottom:26px;padding:8px 15px;border:1px solid #b9a79299;border-radius:18px;background:#faf5ebe9;color:#6b5143;font-size:14px;opacity:0;pointer-events:none;transition:opacity .4s; }
+      .story-progress.visible { opacity:1; }
+      .story-marker { position:fixed;z-index:13;transform:translate(-50%,-50%);padding:9px 17px;border:1px solid #aa8d74;border-radius:22px;background:#fff9edeb;color:#564a3e;box-shadow:0 5px 22px #3c332633;cursor:pointer;font-size:15px;white-space:nowrap; }
+      .story-marker[hidden] { display:none; }
+      .story-panel { position:fixed;z-index:15;left:50%;bottom:122px;transform:translate(-50%,15px);width:min(540px,calc(100vw - 36px));padding:24px 28px;background:#fbf6ecee;border:1px solid #bbaa91;border-radius:12px;box-shadow:0 12px 42px #362d213b;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s; }
+      .story-panel.visible { opacity:1;pointer-events:auto;transform:translate(-50%,0); }
+      .story-panel .story-title { color:#98745d;font-size:15px;letter-spacing:.2em; }
+      .story-panel .story-text { margin:12px 0 20px;color:#4d4237;font-size:20px;line-height:1.7; }
+      .story-panel button { display:block;margin-left:auto;padding:7px 18px;border:1px solid #a98c70;border-radius:18px;background:#eee4d5;color:#594939;cursor:pointer; }
+      .story-ending { position:fixed;z-index:20;inset:0;display:grid;place-items:center;background:#090a0a;opacity:0;visibility:hidden;transition:opacity 2.5s,visibility 2.5s; }
+      .story-ending.visible { opacity:1;visibility:visible; }
+      .story-ending .book { padding:34px 28px;border:1px solid #9c8460;background:#302b27;box-shadow:12px 15px 35px #000;color:#d9c9a7;font-size:31px;letter-spacing:.3em;writing-mode:vertical-rl; }
+      .story-ending p { position:absolute;bottom:9vh;color:#d9c9a7;font-size:20px;letter-spacing:.18em;text-align:center; }
+      .story-ending button { position:absolute;bottom:4vh;border:1px solid #ad9673;border-radius:17px;padding:5px 18px;background:#282521;color:#d9c9a7;cursor:pointer; }
+      body.prologue-active, body.prologue-active #stage { background:#030405; }
+      body.prologue-active .topbar, body.prologue-active .legend,
+      body.prologue-active .hint, body.prologue-active .move-controls,
+      body.prologue-active .atmosphere, body.prologue-active .paper-grain,
+      body.prologue-active .encounter-caption, body.prologue-active .ancient-tree-tag,
+      body.prologue-active .story-progress, body.prologue-active .story-marker,
+      body.prologue-active .story-panel { display:none; }
+      .prologue-ui { position:fixed; z-index:13; inset:auto 0 7vh; text-align:center; color:#d7c7a7;
+        pointer-events:none; opacity:0; transition:opacity 1s ease; text-shadow:0 1px 16px #000; }
+      body.prologue-active.prologue-revealed .prologue-ui { opacity:1; }
+      .prologue-ui .eyebrow { font-size:12px; letter-spacing:.55em; color:#95866d; }
+      .prologue-ui .prologue-instruction { margin:12px 0 5px; font-family:"华文行楷","STXingkai","KaiTi",serif; font-size:27px; letter-spacing:.14em; }
+      .prologue-ui .prologue-sub { font-family:"华文行楷","STXingkai","KaiTi",serif; font-size:16px; letter-spacing:.14em; color:#a49983; }
+      .arrival-veil { position:fixed; z-index:14; inset:0; pointer-events:none; visibility:hidden;
+        opacity:0; background:#f5f0e7; }
+      body.arrival .arrival-veil { visibility:visible; opacity:1; }
+      body.arrival.arrival-clearing .arrival-veil { opacity:0; transition:opacity 1.45s ease; }
+      body.arrival-observe .move-controls { opacity:.48; pointer-events:none; }
+      @media(max-width:700px) {
+        .topbar { top:15px; left:15px; right:15px; }
+        .brand strong { font-size:20px; }
+        .hint { right:14px; bottom:140px; font-size:11px; }
+        .legend { right:14px; top:76px; }
+        .move-controls { right:13px; bottom:18px; grid-template-columns:repeat(3,39px); gap:5px; }
+        .move-controls button { width:39px; height:39px; font-size:18px; }
+        .encounter-caption { bottom:130px; font-size:15px; padding:9px 15px; }
+        .ancient-tree-tag { font-size:12px; padding:5px 8px; }
+      }
+    </style>
+    <script type="importmap">{"imports":{"three":"./assets/three.module.js"}}</script>
+  </head>
+  <body class="prologue-active">
+    <main id="stage" aria-label="用汉字构成的聊斋三维山谷"></main>
+    <div class="prologue-ui" aria-live="polite">
+      <div class="eyebrow">序 · 开卷</div>
+      <div class="prologue-instruction">按住书页，向左缓缓翻开</div>
+      <div class="prologue-sub">指尖牵动书页，墨字将引你入谷</div>
+    </div>
+    <div class="arrival-veil" aria-hidden="true"></div>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <div class="paper-grain" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="brand"><small>聊斋幻城 · DIGITAL</small><strong>南山花坞</strong></div>
+    </header>
+    <div class="legend">以字为山 · 以句为径</div>
+    <div class="hint">拖动转动视角 · 方向键穿行<br>沿花径转弯，山水才逐一展开</div>
+    <div class="encounter-caption" id="encounter-caption" aria-live="polite"></div>
+    <div class="ancient-tree-tag" id="ancient-tree-tag" aria-hidden="true">笑声古树</div>
+    <div class="story-progress" id="story-progress" aria-live="polite"></div>
+    <button class="story-marker" id="story-marker" hidden></button>
+    <section class="story-panel" id="story-panel" aria-live="polite">
+      <div class="story-title" id="story-title"></div>
+      <p class="story-text" id="story-text"></p>
+      <button id="story-next">继续</button>
+    </section>
+    <div class="story-ending" id="story-ending"><div class="book">聊斋志异</div><p>知我者，其在青林黑塞间乎。</p><button id="story-replay">再翻一遍</button></div>
+    <div class="move-controls" aria-label="移动控制">
+      <button class="up" data-direction="forward" aria-label="向前">↑</button>
+      <button class="left" data-direction="left" aria-label="向左">←</button>
+      <button class="down" data-direction="back" aria-label="后退">↓</button>
+      <button class="right" data-direction="right" aria-label="向右">→</button>
+    </div>
+<script type="module" src="./scene.js?build=geometric-fox-56"></script>
+  </body>
+</html>
