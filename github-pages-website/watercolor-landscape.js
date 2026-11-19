@@ -12,7 +12,7 @@ export function createWatercolorLandscape({ pathX, riverX, hills, folds }) {
   let seed = 98437;
   const rnd = () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 4294967296);
 
-  ctx.fillStyle = '#f4eedf';
+  ctx.fillStyle = '#f0e5cf';
   ctx.fillRect(0, 0, size, size);
   for (let i = 0; i < 135; i++) {
     const x = rnd() * size, y = rnd() * size;
@@ -39,15 +39,15 @@ export function createWatercolorLandscape({ pathX, riverX, hills, folds }) {
   }
   for (const hill of hills) {
     bloom(hill.x, hill.z, hill.rx * 1.5, hill.rz * 1.35,
-      'rgba(90,125,102,ALPHA)', 0.75, hill.angle || 0);
+      'rgba(126,123,100,ALPHA)', 0.46, hill.angle || 0);
     bloom(hill.x - hill.rx * 0.27, hill.z + hill.rz * 0.15,
-      hill.rx * 0.8, hill.rz * 0.65, 'rgba(71,100,82,ALPHA)', 0.65);
+      hill.rx * 0.8, hill.rz * 0.65, 'rgba(113,116,97,ALPHA)', 0.38);
     bloom(hill.x + hill.rx * 0.35, hill.z - hill.rz * 0.28,
       hill.rx * 0.85, hill.rz * 0.68, 'rgba(166,158,115,ALPHA)', 0.50);
   }
   for (const fold of folds) {
     bloom(fold.x, fold.z, fold.rx * 1.35, fold.rz,
-      'rgba(102,137,110,ALPHA)', 0.9);
+      'rgba(132,133,108,ALPHA)', 0.48);
   }
 
   // Broad colored ink meadows give the close banks an uninterrupted silhouette.
@@ -55,11 +55,11 @@ export function createWatercolorLandscape({ pathX, riverX, hills, folds }) {
     for (const side of [-1, 1]) {
       const bend = Math.sin(z * 0.27 + side) * 0.55;
       bloom(pathX(z) + side * (5.5 + bend), z,
-        4.2, 4.0, 'rgba(79,121,83,ALPHA)', 1.28);
+        4.2, 4.0, 'rgba(125,131,100,ALPHA)', 0.45);
       bloom(pathX(z) + side * (8.0 + bend), z + 0.7,
-        4.7, 4.2, 'rgba(105,139,99,ALPHA)', 0.85);
+        4.7, 4.2, 'rgba(151,148,112,ALPHA)', 0.32);
       bloom(riverX(z) + side * 5.5, z + 0.4,
-        3.1, 3.5, 'rgba(84,126,107,ALPHA)', 0.75);
+        3.1, 3.5, 'rgba(130,143,120,ALPHA)', 0.36);
     }
   }
 
@@ -72,8 +72,8 @@ export function createWatercolorLandscape({ pathX, riverX, hills, folds }) {
     const x = center + side * (river ? 3.2 + rnd() * 6 : 2.4 + rnd() * 7);
     const r = 0.25 + rnd() * 1.40;
     bloom(x, z, r * 1.45, r * 0.8,
-      rnd() < 0.5 ? 'rgba(47,91,66,ALPHA)' : 'rgba(105,140,102,ALPHA)',
-      0.56 + rnd() * 0.40);
+      rnd() < 0.5 ? 'rgba(114,127,100,ALPHA)' : 'rgba(149,151,119,ALPHA)',
+      0.24 + rnd() * 0.18);
     if (rnd() < 0.18) {
       ctx.fillStyle = rnd() < 0.45 ? 'rgba(237,164,169,0.61)' : 'rgba(255,252,239,0.88)';
       ctx.beginPath();
@@ -98,21 +98,21 @@ export function createWatercolorLandscape({ pathX, riverX, hills, folds }) {
   }
 
   // A broad, pale spring with blue mineral pigments and flowing brush contours.
-  curvedChannel(riverX, 49, -42, '#9caeaa', 5.7, 0.24);
-  curvedChannel(riverX, 49, -42, '#a8d6d9', 5.1, 0.51);
-  curvedChannel(riverX, 49, -42, '#e8f0e9', 4.2, 0.92);
-  curvedChannel(riverX, 49, -42, '#c7e5e8', 3.35, 0.43);
+  curvedChannel(riverX, 49, -42, '#a8ad9f', 5.7, 0.14);
+  curvedChannel(riverX, 49, -42, '#c3d1ca', 5.1, 0.29);
+  curvedChannel(riverX, 49, -42, '#e9ede5', 4.2, 0.94);
+  curvedChannel(riverX, 49, -42, '#d9e2d9', 3.35, 0.24);
   for (let lane = -4; lane <= 4; lane++) {
     const offset = lane * 0.40;
     curvedChannel(z => riverX(z) + 0.07 * Math.sin(z * 0.71 + lane),
-      46, -41, lane % 2 ? '#6d9da4' : '#d9eceb', 0.045 + (lane % 3) * 0.025,
-      lane % 2 ? 0.28 : 0.57, offset);
+      46, -41, lane % 2 ? '#9aada9' : '#f4f0df', 0.045 + (lane % 3) * 0.025,
+      lane % 2 ? 0.12 : 0.30, offset);
   }
 
   // The entrance path is a complete painted trail, not just four rows of glyphs.
-  curvedChannel(pathX, 49, -45, '#958c77', 4.5, 0.30);
-  curvedChannel(pathX, 49, -45, '#e1d7c1', 4.15, 0.84);
-  curvedChannel(pathX, 49, -45, '#f6f0e2', 3.52, 0.96);
+  curvedChannel(pathX, 49, -45, '#ad9b7e', 4.5, 0.18);
+  curvedChannel(pathX, 49, -45, '#e9dcc3', 4.15, 0.80);
+  curvedChannel(pathX, 49, -45, '#f5ecd7', 3.52, 0.94);
   for (let lane = -4; lane <= 4; lane++) {
     curvedChannel(z => pathX(z) + 0.04 * Math.sin(z * 1.15 + lane),
       47, -44, lane % 2 ? '#c2b6a0' : '#fff9ec', 0.025 + (lane % 3) * 0.018,
@@ -231,7 +231,7 @@ export function addPaintedHorizons(scene) {
   const texture = new THREE.TextureLoader().load('./assets/watercolor-mountains.png');
   texture.colorSpace = THREE.SRGBColorSpace;
   const material = new THREE.MeshBasicMaterial({ map:texture, transparent:true,
-    opacity:0.74, depthWrite:false, side:THREE.DoubleSide, fog:false,
+    opacity:0.48, color:0xe6dcc7, depthWrite:false, side:THREE.DoubleSide, fog:false,
     alphaTest:0.015 });
   for (const [x,z,angle] of [[0,-82,0],[0,82,Math.PI],[-82,0,Math.PI/2],[82,0,-Math.PI/2]]) {
     const plane = new THREE.Mesh(new THREE.PlaneGeometry(158,66), material);
@@ -240,7 +240,28 @@ export function addPaintedHorizons(scene) {
   }
 }
 
-export function addPaintedStream(scene, { ground, riverX }) {
+export function addPaintedStream(scene, { ground, riverX, verse }) {
+  // Lay complete source phrases on the water rather than standing individual
+  // billboards upright. Mipmaps let their strokes merge gently into distant ink.
+  const inkCanvas=document.createElement('canvas');
+  inkCanvas.width=1024;inkCanvas.height=2048;
+  const brush=inkCanvas.getContext('2d');
+  brush.textAlign='center';brush.textBaseline='middle';
+  brush.font='28px KaiTi, STKaiti, Noto Serif CJK SC, SimSun, serif';
+  const words=[...(verse || '乱山合沓空翠爽肌寂无人行止有鸟道丛花乱树')];
+  for(let column=3;column<28;column++){
+    for(let row=0;row<64;row++){
+      brush.fillStyle=`rgba(255,255,255,${.55+.22*Math.sin(column*.57+row*.17)**2})`;
+      brush.fillText(words[(row+column*7)%words.length],
+        16+column*32,16+row*32);
+    }
+  }
+  const inkTexture=new THREE.CanvasTexture(inkCanvas);
+  inkTexture.wrapS=THREE.ClampToEdgeWrapping;
+  inkTexture.wrapT=THREE.RepeatWrapping;
+  inkTexture.minFilter=THREE.LinearMipmapLinearFilter;
+  inkTexture.magFilter=THREE.LinearFilter;
+  inkTexture.anisotropy=8;
   const positions=[], uvs=[], indices=[];
   const rows=340;
   for(let i=0;i<=rows;i++){
@@ -258,17 +279,102 @@ export function addPaintedStream(scene, { ground, riverX }) {
   geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
   geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
   geometry.setIndex(indices);geometry.computeVertexNormals();
-  const material=new THREE.ShaderMaterial({uniforms:{uTime:{value:0}},transparent:true,
+  const material=new THREE.ShaderMaterial({uniforms:{
+    uTime:{value:0},uInk:{value:inkTexture},
+    uSteps:{value:Array.from({length:5},()=>new THREE.Vector3(0,0,-100))},
+  },transparent:true,
     depthWrite:false,side:THREE.DoubleSide,
-    vertexShader:`varying vec2 vUv; void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
-    fragmentShader:`uniform float uTime; varying vec2 vUv;
-      void main(){float bank=smoothstep(0.0,0.19,vUv.x)*(1.0-smoothstep(0.81,1.0,vUv.x));
-      float current=sin(vUv.y*112.0-uTime*0.72+sin(vUv.x*15.0)*0.45);
-      float ripple=sin(vUv.y*210.0-uTime*0.41+vUv.x*21.0);
-      vec3 blue=mix(vec3(0.57,0.77,0.79),vec3(0.86,0.94,0.91),
-        clamp(0.55+current*0.17+ripple*0.08,0.0,1.0));
-      float opacity=bank*(0.28+0.13*current+0.06*ripple);
-      gl_FragColor=vec4(blue,opacity);}`});
+    vertexShader:`varying vec2 vUv; varying vec2 vWorld;
+      void main(){vUv=uv;vWorld=position.xz;
+        gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`uniform float uTime; uniform sampler2D uInk;
+      uniform vec3 uSteps[5]; varying vec2 vUv; varying vec2 vWorld;
+      void main(){
+        float bank=smoothstep(0.0,.20,vUv.x)*(1.0-smoothstep(.80,1.0,vUv.x));
+        float slow=uTime*.23;
+        float swell=sin(vWorld.y*1.8-slow+sin(vWorld.x*1.4)*.6);
+        float fine=sin(vWorld.y*4.6-slow*.7+sin(vWorld.x*2.2+slow*.3)*.7);
+        float glint=pow(max(0.0,.64*swell+.36*fine),6.0);
+        float stroke=1.0-smoothstep(.035,.16,abs(swell+.13*fine));
+        float wake=0.0;
+        for(int i=0;i<5;i++){
+          float age=uTime-uSteps[i].z;
+          if(age>0.0 && age<1.85){
+            float d=distance(vWorld,uSteps[i].xy);
+            float front=age*.40;
+            wake+=sin((d-front)*28.0)*exp(-pow((d-front)/.22,2.0))
+              *sin(age/1.85*3.14159);
+          }
+        }
+        vec2 inkUv=vec2(vUv.x+.002*swell+wake*.007,
+          vUv.y*6.0-uTime*.0025+.0008*fine+wake*.0015);
+        float letter=texture2D(uInk,inkUv).a*bank;
+        vec3 ink=mix(vec3(.40,.48,.46),vec3(.58,.62,.55),.5+.5*swell);
+        vec3 reflection=mix(vec3(.75,.80,.76),vec3(.98,.97,.90),.68+.32*swell);
+        float sheen=bank*(.075+.19*glint+.065*stroke+max(0.0,wake)*.19);
+        float alpha=letter*.72+sheen*(1.0-letter*.72);
+        vec3 color=mix(reflection,ink,letter*.72/max(alpha,.001));
+        gl_FragColor=vec4(color,alpha);
+      }`});
   const stream=new THREE.Mesh(geometry,material);stream.renderOrder=0;
   scene.add(stream);return material;
+}
+
+export function addPaintedPath(scene, {ground,pathX,verse}) {
+  const canvas=document.createElement('canvas');
+  canvas.width=512;canvas.height=2048;
+  const ctx=canvas.getContext('2d');
+  ctx.font='28px KaiTi, STKaiti, Noto Serif CJK SC, SimSun, serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  const words=[...verse.replace(/[，。「」]/g,'')];
+  for(let col=1;col<=14;col++){
+    for(let row=0;row<64;row++){
+      ctx.fillStyle=`rgba(255,255,255,${.65+.18*Math.sin(col*.7+row*.22)**2})`;
+      ctx.fillText(words[(row+col*7)%words.length],16+col*32,16+row*32);
+    }
+  }
+  const texture=new THREE.CanvasTexture(canvas);
+  texture.wrapT=THREE.RepeatWrapping;
+  texture.minFilter=THREE.LinearMipmapLinearFilter;texture.anisotropy=8;
+  const vertices=[],uvs=[],indices=[];
+  const rows=420,cols=8;
+  for(let i=0;i<=rows;i++){
+    const z=44-i*88/rows;
+    const narrow=1-.24*THREE.MathUtils.smoothstep(z,-16,8);
+    for(let j=0;j<=cols;j++){
+      const x=pathX(z)+(j/cols*2-1)*1.65*narrow;
+      vertices.push(x,ground(x,z)+.18,z);uvs.push(j/cols,i/rows);
+      if(i<rows&&j<cols){const a=i*(cols+1)+j;
+        indices.push(a,a+cols+1,a+1,a+1,a+cols+1,a+cols+2);}
+    }
+  }
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));
+  geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));geometry.setIndex(indices);
+  const material=new THREE.ShaderMaterial({
+    uniforms:{uTime:{value:0},uInk:{value:texture},
+      uSteps:{value:Array.from({length:5},()=>new THREE.Vector3(0,0,-100))}},
+    transparent:true,depthWrite:false,side:THREE.DoubleSide,
+    vertexShader:`uniform float uTime; uniform vec3 uSteps[5];
+      varying vec2 vUv; varying float vWake;
+      void main(){vUv=uv;vec3 p=position;float wake=0.0;
+        for(int i=0;i<5;i++){
+          float age=uTime-uSteps[i].z;
+          if(age>0.0 && age<.65){float d=distance(position.xz,uSteps[i].xy);
+            wake+=sin((d-age*.85)*22.0)*exp(-pow((d-age*.85)/.22,2.0))
+              *sin(age/.65*3.14159);}
+        }
+        p.y+=wake*.045;vWake=wake;
+        gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.0);
+      }`,
+    fragmentShader:`uniform float uTime;uniform sampler2D uInk;
+      varying vec2 vUv;varying float vWake;
+      void main(){vec2 uv=vec2(vUv.x+vWake*.008,vUv.y*6.0+uTime*.003);
+        float ink=texture2D(uInk,uv).a;
+        if(ink<.015)discard;
+        gl_FragColor=vec4(vec3(.48,.42,.33),ink*(.62+abs(vWake)*.08));
+      }`,
+  });
+  const path=new THREE.Mesh(geometry,material);path.renderOrder=1;
+  scene.add(path);return material;
 }

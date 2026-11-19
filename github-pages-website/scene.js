@@ -1,9 +1,9 @@
 import * as THREE from 'three';
-import { createPrologue } from './prologue.js';
+import { createPrologue } from './prologue.js?build=sea-verse-66';
 import { createYingningCharacter } from './yingning-fox.js?build=geometric-fox-56';
-import { createYingningStory } from './yingning-story.js';
+import { createYingningStory } from './yingning-story.js?build=sea-verse-66';
 import { createWatercolorLandscape, addWatercolorShrubs, addPaintedHorizons,
-  addPaintedStream } from './watercolor-landscape.js?build=painted-valley-49';
+  addPaintedStream, addPaintedPath } from './watercolor-landscape.js?build=warm-ink-57';
 
 const revision = new URLSearchParams(location.search).get('rev') ?? 'source-verse-2';
 const prototypeInk = revision === 'layered-ink-prototype';
@@ -11,22 +11,22 @@ const expandedInk = revision === 'layered-ink-valley' || revision === 'source-ve
 const layeredInk = prototypeInk || expandedInk;
 const stage = document.getElementById('stage');
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#f5f0e7');
+scene.background = new THREE.Color('#f0e6d3');
 if (expandedInk) {
   const skyCanvas = document.createElement('canvas');
   skyCanvas.width = 1024;
   skyCanvas.height = 512;
   const skyInk = skyCanvas.getContext('2d');
   const paperSky = skyInk.createLinearGradient(0, 0, 0, 512);
-  paperSky.addColorStop(0, '#f1f0ec');
-  paperSky.addColorStop(0.55, '#f7f3eb');
-  paperSky.addColorStop(1, '#fbf6ed');
+  paperSky.addColorStop(0, '#eae0cf');
+  paperSky.addColorStop(0.55, '#f3ead9');
+  paperSky.addColorStop(1, '#f6eddb');
   skyInk.fillStyle = paperSky;
   skyInk.fillRect(0, 0, 1024, 512);
   for (const [x, y, radius, tone] of [
-    [145, 90, 280, 'rgba(190,197,202,0.075)'],
-    [860, 130, 340, 'rgba(197,201,205,0.065)'],
-    [500, 370, 420, 'rgba(226,194,176,0.075)'],
+    [145, 90, 280, 'rgba(188,163,123,0.065)'],
+    [860, 130, 340, 'rgba(198,173,136,0.055)'],
+    [500, 370, 420, 'rgba(222,190,146,0.065)'],
   ]) {
     const bloom = skyInk.createRadialGradient(x, y, 0, x, y, radius);
     bloom.addColorStop(0, tone);
@@ -38,7 +38,7 @@ if (expandedInk) {
   skyTexture.colorSpace = THREE.SRGBColorSpace;
   scene.background = skyTexture;
 }
-scene.fog = new THREE.Fog('#f5f0e7', 35, 100);
+scene.fog = new THREE.Fog('#f0e6d3', 35, 100);
 scene.add(new THREE.AmbientLight('#fff5e6', 0.86));
 const hillsideSun = new THREE.DirectionalLight('#fff3df', 0.48);
 hillsideSun.position.set(-17, 24, 13);
@@ -201,12 +201,12 @@ const blue = ['#4d8094', '#6397a7', '#73aabb', '#568b9d', '#7bb2be'];
 const landGeometry = new THREE.PlaneGeometry(110, 110, 176, 176);
 const landPositions = landGeometry.attributes.position;
 const landColors = [];
-const darkPaper = new THREE.Color(expandedInk ? '#dedccc' : '#d8c6ae');
-const lightPaper = new THREE.Color(expandedInk ? '#f4f0e5' : '#f3eadc');
-const pathPaper = new THREE.Color('#f6efe5');
-const bankPaper = new THREE.Color(expandedInk ? '#e2e9df' : '#ede2d2');
-const streamPaper = new THREE.Color(expandedInk ? '#f0f8f4' : '#fcf9f2');
-const meadowPaper = new THREE.Color('#b9d0bb');
+const darkPaper = new THREE.Color(expandedInk ? '#dcd1bc' : '#d8c6ae');
+const lightPaper = new THREE.Color(expandedInk ? '#f3ead8' : '#f3eadc');
+const pathPaper = new THREE.Color('#f6eddb');
+const bankPaper = new THREE.Color(expandedInk ? '#e5dfce' : '#ede2d2');
+const streamPaper = new THREE.Color(expandedInk ? '#f5eedf' : '#fcf9f2');
+const meadowPaper = new THREE.Color('#c4c3a9');
 const paperColor = new THREE.Color();
 const waterColor = new THREE.Color();
 for (let i = 0; i < landPositions.count; i++) {
@@ -219,10 +219,10 @@ for (let i = 0; i < landPositions.count; i++) {
     - 0.045 * height, 0.18, 0.92);
   paperColor.copy(darkPaper).lerp(lightPaper, wash);
   if (expandedInk) {
-    const meadowWash = THREE.MathUtils.clamp(0.27
-      + 0.11 * Math.sin(x * 0.19 + z * 0.12)
-      + 0.08 * Math.cos(x * 0.34 - z * 0.22)
-      - 0.028 * height, 0.08, 0.48);
+    const meadowWash = THREE.MathUtils.clamp(0.12
+      + 0.045 * Math.sin(x * 0.19 + z * 0.12)
+      + 0.035 * Math.cos(x * 0.34 - z * 0.22)
+      - 0.028 * height, 0.04, 0.24);
     paperColor.lerp(meadowPaper, meadowWash);
   }
   const pathNarrowness = expandedInk ? THREE.MathUtils.smoothstep(z, -16, 8) : 0;
@@ -242,7 +242,7 @@ const hillShellGeometry = landGeometry.clone();
 hillShellGeometry.rotateX(-Math.PI / 2);
 hillShellGeometry.computeVertexNormals();
 const hillShell = new THREE.Mesh(hillShellGeometry, new THREE.MeshBasicMaterial({
-  color: expandedInk ? '#b8cdbd' : '#e5d9c8',
+  color: expandedInk ? '#b7b29b' : '#e5d9c8',
   transparent: true, opacity: expandedInk ? 0.095 : 0.035,
   depthWrite: false, side: THREE.FrontSide,
 }));
@@ -274,9 +274,13 @@ const watercolorGround = new THREE.Mesh(landGeometry, new THREE.MeshBasicMateria
 watercolorGround.renderOrder = expandedInk ? -2 : 0;
 scene.add(watercolorGround);
 let paintedStreamMaterial = null;
+let paintedPathMaterial = null;
 if (expandedInk) {
   addPaintedHorizons(scene);
-  paintedStreamMaterial = addPaintedStream(scene, { ground, riverX });
+  paintedStreamMaterial = addPaintedStream(scene, { ground, riverX,
+    verse: sourceInk.water + sourceInk.cascade });
+  paintedPathMaterial = addPaintedPath(scene, { ground, pathX,
+    verse: sourceSentences.join('') });
   addWatercolorShrubs(scene, { ground, pathX, riverX });
 }
 
@@ -371,24 +375,24 @@ function addLayeredInkHill(fold) {
     ink.fillRect(0, 0, canvas.width, canvas.height);
     ink.textAlign = 'center';
     ink.textBaseline = 'middle';
-    ink.font = '19px KaiTi, STKaiti, Noto Serif CJK SC, SimSun, serif';
-    const columnGap = 22.5;
-    for (let column = 0; column < 54; column++) {
-      const x = 13 + column * columnGap + layer * 6.8
-        + 3.3 * Math.sin(column * 0.51 + layer * 1.7);
+    ink.font = '18.5px KaiTi, STKaiti, Noto Serif CJK SC, SimSun, serif';
+    const columnGap = 19.2;
+    for (let column = 0; column < 62; column++) {
+      const x = 12 + column * columnGap + layer * 3.1
+        + 0.8 * Math.sin(column * 0.51 + layer * 1.7);
       if (x > canvas.width - 10) break;
       const top = canvas.height * (1 - heightAt(x / canvas.width) / maxHeight);
       if (top > canvas.height - 54) continue;
       const text = phrases[(column + layer * 2) % phrases.length];
       let row = 0;
-      for (let y = top + 13; y < canvas.height - 9; y += 21.5, row++) {
+      for (let y = top + 13; y < canvas.height - 9; y += 19.4, row++) {
         const character = text[row % text.length];
         const fromTop = (y - top) / Math.max(1, canvas.height - top);
         const baseFade = Math.min(1, (canvas.height - y) / 92);
         ink.globalAlpha = (0.62 + fromTop * 0.19) * baseFade
           * (layer < 2 ? 0.77 : 1) * (distantHill ? 0.94 : expandedInk ? 0.82 : 1);
         ink.fillStyle = layer < 2 ? '#888071' : fromTop > 0.47 ? '#655d51' : '#82796a';
-        ink.fillText(character, x + 3.7 * Math.sin(row * 0.48 + column * 0.33), y);
+        ink.fillText(character, x + 0.6 * Math.sin(row * 0.48 + column * 0.33), y);
       }
     }
     ink.restore();
@@ -490,19 +494,19 @@ for (let i = 0; i < 460; i++) {
 
 // Each close-spaced longitudinal lane carries a continuous excerpt from the source.
 let streamRow = 0;
-for (let z = 43; z > (expandedInk ? -42 : -32); z -= expandedInk ? 0.18 : 0.22, streamRow++) {
+for (let z = 43; z > (expandedInk ? -42 : -32); z -= expandedInk ? 0.15 : 0.22, streamRow++) {
   const center = riverX(z);
   const lineColor = choose(expandedInk
-    ? ['#6595a5', '#77a7b4', '#88b6c0', '#75aab8', '#a0c5c8'] : blue);
-  const laneCount = expandedInk ? 21 : 12;
+    ? ['#849c9e', '#8fa6a6', '#a1b5b1', '#92a7a7', '#b0bfba'] : blue);
+  const laneCount = expandedInk ? 29 : 12;
   for (let lane = 0; lane < laneCount; lane++) {
-    const offset = expandedInk ? -1.55 + lane * 0.155 : -1.55 + lane * 0.27;
+    const offset = expandedInk ? -1.55 + lane * (3.10 / 28) : -1.55 + lane * 0.27;
     const x = center + offset
-      + (expandedInk ? 0.023 * Math.sin(streamRow * 0.36 + lane * 0.57) : 0);
+      + (expandedInk ? 0.009 * Math.sin(streamRow * 0.36 + lane * 0.57) : 0);
     const character = expandedInk ? inkLetter(sourceInk.water, streamRow + lane * 4)
       : layeredInk ? '水' : nextLetter('stream');
     put(character, x, ground(x, z) + 0.15, z, lineColor,
-      expandedInk ? 0.27 : 0.31, true);
+      expandedInk ? 0.235 : 0.31, true);
   }
   if (!layeredInk && random() < 0.82) {
     for (const side of [-1, 1]) {
@@ -533,13 +537,13 @@ if (!layeredInk) {
 if (expandedInk) {
   const pathVerse = [...sourceSentences.join('').replace(/[，。「」]/g, '')];
   let step = 0;
-  for (let z = 44; z > -43; z -= 0.29, step++) {
+  for (let z = 44; z > -43; z -= 0.225, step++) {
     const birdPath = 1 - 0.24 * THREE.MathUtils.smoothstep(z, -16, 8);
-    for (let lane = -4; lane <= 4; lane++) {
-      const x = pathX(z) + lane * 0.34 * birdPath;
-      const shift = (lane + 4) * 7;
+    for (let lane = -6; lane <= 6; lane++) {
+      const x = pathX(z) + lane * 0.225 * birdPath;
+      const shift = (lane + 6) * 7;
       put(pathVerse[(step + shift) % pathVerse.length], x, ground(x, z) + 0.16, z,
-        lane % 3 === 0 ? '#857866' : lane < 0 ? '#9c8d77' : '#a0937f', 0.33, 'path');
+        lane % 3 === 0 ? '#9a8b73' : lane < 0 ? '#a89a83' : '#b1a28a', 0.30, 'path');
     }
   }
 }
@@ -1460,7 +1464,7 @@ const mistTexture = new THREE.CanvasTexture(mistCanvas);
 for (const fold of scenicFolds) {
   const z = fold.z - 3.5, x = pathX(z);
   const mist = new THREE.Sprite(new THREE.SpriteMaterial({
-    map: mistTexture, color: '#f5f0e7', transparent: true, opacity: 0.28,
+    map: mistTexture, color: '#f0e6d3', transparent: true, opacity: 0.28,
     depthWrite: false, fog: false,
   }));
   mist.position.set(x, ground(x, z) + 1.35, z);
@@ -1623,6 +1627,7 @@ const materials = [];
 const waterObjects = [];
 const pathObjects = [];
 for (const bucket of buckets.values()) {
+  if (expandedInk && (bucket.motion === 'river' || bucket.motion === 'path')) continue;
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(bucket.positions, 3));
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(bucket.colors, 3));
@@ -1631,7 +1636,7 @@ for (const bucket of buckets.values()) {
     uniforms: {
       uMap: { value: glyphTexture(bucket.char) },
       uViewport: { value: renderer.domElement.height },
-      uFog: { value: new THREE.Color('#f5f0e7') },
+      uFog: { value: new THREE.Color('#f0e6d3') },
     },
     vertexShader: [
       'attribute vec3 color;',
@@ -1659,7 +1664,7 @@ for (const bucket of buckets.values()) {
       '  vec4 glyph = texture2D(uMap, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));',
       '  float inkWash = smoothstep(9.0, 32.0, vDistance);',
       '  float brush = 1.0 - smoothstep(0.20, 0.92, length(gl_PointCoord * 2.0 - 1.0));',
-      '  float alpha = mix(glyph.a, brush * 0.22, inkWash * 0.67);',
+      '  float alpha = mix(smoothstep(0.04, 0.94, glyph.a) * 0.86, brush * 0.18, inkWash * 0.48);',
       '  if (alpha < 0.06) discard;',
       '  float fog = clamp((vDistance - 28.0) / 83.0, 0.0, 0.72);',
       '  vec3 ink = mix(vColor, uFog, fog);',
@@ -1698,6 +1703,10 @@ let arrivalUnlockAt = 0;
 const prologueEnabled = expandedInk && !sceneView && new URLSearchParams(location.search).get('intro') !== '0';
 const prologue = prologueEnabled ? createPrologue(renderer, () => {
   document.body.classList.remove('prologue-active', 'prologue-revealed');
+  for(const link of document.querySelectorAll('.chapter-nav a')){
+    if(link.getAttribute('href').includes('space=nanshan'))link.setAttribute('aria-current','page');
+    else link.removeAttribute('aria-current');
+  }
   document.body.classList.add('arrival', 'arrival-observe');
   arrivalUnlockAt = performance.now() + 3450;
   requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('arrival-clearing')));
@@ -1923,9 +1932,9 @@ function footSurface(x, z) {
   return 'meadow';
 }
 const rippleTones = {
-  path: new THREE.Color('#806b58'),
-  water: new THREE.Color('#519cb7'),
-  meadow: new THREE.Color('#689477'),
+  path: new THREE.Color('#a18d70'),
+  water: new THREE.Color('#8faeaf'),
+  meadow: new THREE.Color('#a5aa8a'),
 };
 function footTint(x, z, surface) {
   const ix = THREE.MathUtils.clamp(Math.round((x + 55) / 110 * 176), 0, 176);
@@ -1934,34 +1943,41 @@ function footTint(x, z, surface) {
   return new THREE.Color(landColors[index], landColors[index + 1], landColors[index + 2])
     .lerp(rippleTones[surface], surface === 'water' ? 0.77 : 0.64);
 }
-const ripplePhrase = [...'窃闻山中有草名笑矣乎嗅之则笑不可止'];
-const rippleWaves = expandedInk ? Array.from({ length: 3 }, () => {
-  const ring = new THREE.Mesh(new THREE.RingGeometry(0.91, 1.0, 64),
-    new THREE.MeshBasicMaterial({ color:'#95806c', transparent:true,
-      opacity:0, side:THREE.DoubleSide, depthTest:false, depthWrite:false }));
-  ring.rotation.x = -Math.PI / 2;
-  ring.visible = false;
-  ring.renderOrder = 19;
-  scene.add(ring);
-  const waterRing = new THREE.Mesh(new THREE.RingGeometry(0.68, 1.0, 64),
-    new THREE.MeshBasicMaterial({ color:'#e7f7f9', transparent:true,
-      opacity:0, side:THREE.DoubleSide, depthTest:false, depthWrite:false }));
-  waterRing.rotation.x = -Math.PI / 2;
-  waterRing.visible = false;
-  waterRing.renderOrder = 19;
-  scene.add(waterRing);
-  const sprites = Array.from({ length: 8 }, (_, i) => {
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: glyphTexture(ripplePhrase[i % ripplePhrase.length]),
-      color: '#695543', transparent: true, opacity: 0,
-      depthTest: false, depthWrite: false,
-    }));
-    sprite.visible = false;
-    sprite.renderOrder = 20;
-    scene.add(sprite);
-    return sprite;
+const rippleWaves = expandedInk ? Array.from({ length: 5 }, () => {
+  const material = new THREE.ShaderMaterial({
+    uniforms: { uPhase:{value:1}, uWater:{value:0}, uTint:{value:new THREE.Color()} },
+    transparent:true, depthWrite:false, side:THREE.DoubleSide,
+    vertexShader:`varying vec2 vUv; void main(){vUv=uv;
+      gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+    fragmentShader:`varying vec2 vUv; uniform float uPhase; uniform float uWater;
+      uniform vec3 uTint;
+      void main(){
+        vec2 p=(vUv-.5)*2.0;
+        float r=length(p*vec2(1.0,1.04));
+        float a=atan(p.y,p.x);
+        float wobble=.009*sin(a*3.0+uPhase*1.5)+.004*sin(a*7.0);
+        float rings=0.0; float light=0.0;
+        for(int i=0;i<4;i++){
+          float progress=uPhase-float(i)*.105;
+          float radius=.08+.81*max(progress,0.0);
+          float envelope=smoothstep(0.0,.12,progress)*(1.0-smoothstep(.43,1.0,progress));
+          float d=r-radius-wobble;
+          rings+=exp(-pow(d/.014,2.0))*envelope*(1.0-float(i)*.16);
+          light+=exp(-pow((d-.023)/.023,2.0))*envelope*(1.0-float(i)*.16);
+        }
+        float strength=mix(.18,.48,uWater);
+        vec3 ink=mix(uTint,vec3(.97,.96,.89),light/(rings+light+.001));
+        float alpha=(rings+light*.64)*strength*(1.0-smoothstep(.8,1.0,r));
+        if(alpha<.002)discard;
+        gl_FragColor=vec4(ink,alpha);
+      }`,
   });
-  return { x: 0, z: 0, at: -100, surface:'path', tint:new THREE.Color(), sprites, ring, waterRing };
+  const mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.4,1.4),material);
+  mesh.rotation.x=-Math.PI/2;
+  mesh.visible=false;
+  mesh.renderOrder=3;
+  scene.add(mesh);
+  return { x:0, z:0, at:-100, surface:'path', tint:new THREE.Color(), mesh };
 }) : [];
 let rippleWaveCursor = 0;
 function addFootstep() {
@@ -1972,14 +1988,14 @@ function addFootstep() {
   const surface = footSurface(camera.position.x, camera.position.z);
   const tint = footTint(camera.position.x, camera.position.z, surface);
   camera.updateMatrixWorld();
-  let visibleX = camera.position.x + forwardX * 5.8 + sideX * side * 0.18;
-  let visibleZ = camera.position.z + forwardZ * 5.8 + sideZ * side * 0.18;
+  let visibleX = camera.position.x + forwardX * 1.4 + sideX * side * 0.18;
+  let visibleZ = camera.position.z + forwardZ * 1.4 + sideZ * side * 0.18;
   const projected = new THREE.Vector3();
   for (let distance = 1.4; distance <= 6.4; distance += 0.2) {
     const x = camera.position.x + forwardX * distance + sideX * side * 0.18;
     const z = camera.position.z + forwardZ * distance + sideZ * side * 0.18;
     projected.set(x, ground(x, z) + 0.22, z).project(camera);
-    if (projected.y > -0.70 && projected.y < 0.75 && Math.abs(projected.x) < 0.82) {
+    if (projected.y > -0.94 && projected.y < 0.75 && Math.abs(projected.x) < 0.82) {
       visibleX = x;
       visibleZ = z;
       break;
@@ -1999,8 +2015,16 @@ function addFootstep() {
     wave.x = visibleX;
     wave.z = visibleZ;
     wave.at = at;
-    wave.surface = surface;
-    wave.tint.copy(tint);
+    wave.surface = footSurface(visibleX, visibleZ);
+    wave.tint.copy(footTint(visibleX, visibleZ, wave.surface));
+    if(wave.surface==='water' && paintedStreamMaterial){
+      const index=(rippleWaveCursor-1)%rippleWaves.length;
+      paintedStreamMaterial.uniforms.uSteps.value[index].set(visibleX,visibleZ,at);
+    }
+    if(wave.surface==='path' && paintedPathMaterial){
+      const index=(rippleWaveCursor-1)%rippleWaves.length;
+      paintedPathMaterial.uniforms.uSteps.value[index].set(visibleX,visibleZ,at);
+    }
   }
 }
 function move(direction, amount = 0.42, startStep = false) {
@@ -2093,12 +2117,13 @@ const footsteps = [];
 const walkDirection = new THREE.Vector2(0, -1);
 let stepDistance = 0;
 let footParity = 0;
-const rippleInk = new THREE.Color('#594b3b');
-const rippleDuration = new URLSearchParams(location.search).has('qa') ? 5 : 1.22;
+const rippleInk = new THREE.Color('#8e806b');
+const rippleDuration = 1.85;
 function animate() {
   requestAnimationFrame(animate);
   const time = clock.getElapsedTime();
   if (paintedStreamMaterial) paintedStreamMaterial.uniforms.uTime.value = time;
+  if (paintedPathMaterial) paintedPathMaterial.uniforms.uTime.value = time;
   if (prologue?.active) {
     prologue.update(performance.now() / 1000);
     return;
@@ -2111,7 +2136,7 @@ function animate() {
     for (let i = 0; i < position.count; i++) {
       const k = i * 3;
       const ox = origin[k], oy = origin[k + 1], oz = origin[k + 2];
-      const flow = (time * 0.10) % 0.29;
+      const flow = (time * 0.045) % 0.225;
       let z = oz - flow;
       let x = pathX(z) + (ox - pathX(oz));
       let y = oy;
@@ -2129,12 +2154,12 @@ function animate() {
         waveStrength = Math.max(waveStrength, pulse);
         x += rx / Math.max(distance, 0.1) * pulse * 0.13;
         z += rz / Math.max(distance, 0.1) * pulse * 0.13;
-        y += pulse * 0.16;
+        y += pulse * 0.055;
       }
       position.array[k] = x;
       position.array[k + 1] = y;
       position.array[k + 2] = z;
-      sizeAttribute.array[i] = sizes[i] * (1 + waveStrength * 1.35);
+      sizeAttribute.array[i] = sizes[i] * (1 + waveStrength * 0.14);
       colorAttribute.array[k] = THREE.MathUtils.lerp(colors[k], rippleInk.r, waveStrength);
       colorAttribute.array[k + 1] = THREE.MathUtils.lerp(colors[k + 1], rippleInk.g, waveStrength);
       colorAttribute.array[k + 2] = THREE.MathUtils.lerp(colors[k + 2], rippleInk.b, waveStrength);
@@ -2143,68 +2168,43 @@ function animate() {
     sizeAttribute.needsUpdate = true;
     colorAttribute.needsUpdate = true;
   }
-  while (footsteps.length && time - footsteps[0].at > 0.6) footsteps.shift();
+  while (footsteps.length && time - footsteps[0].at > rippleDuration) footsteps.shift();
   for (const wave of rippleWaves) {
-    const age = time - wave.at;
-    const active = age >= 0 && age < rippleDuration;
-    const phase = active ? age / rippleDuration : 1;
-    const radius = 0.13 + 0.29 * (1 - Math.pow(1 - phase, 2));
-    const opacity = active ? 0.48 * Math.sin(Math.PI * phase) : 0;
-    wave.ring.visible = active;
-    wave.waterRing.visible = active && wave.surface === 'water';
-    if (active) {
-      wave.ring.position.set(wave.x, ground(wave.x, wave.z) + 0.22, wave.z);
-      wave.ring.scale.setScalar(radius);
-      wave.ring.material.color.copy(wave.tint);
-      wave.ring.material.opacity = (wave.surface === 'water' ? 0.64 : 0.32) * Math.sin(Math.PI * phase);
-      if (wave.surface === 'water') wave.ring.material.color.copy(wave.tint).lerp(new THREE.Color('#498ca8'), 0.68);
-      if (wave.surface === 'water') {
-        wave.waterRing.position.copy(wave.ring.position);
-        wave.waterRing.position.y += 0.012;
-        wave.waterRing.scale.setScalar(radius * 0.78);
-        wave.waterRing.material.color.copy(wave.tint).lerp(new THREE.Color('#e8fbfc'), 0.88);
-        wave.waterRing.material.opacity = 0.75 * Math.sin(Math.PI * phase);
-      }
-    }
-    for (let i = 0; i < wave.sprites.length; i++) {
-      const letter = wave.sprites[i];
-      letter.visible = active && wave.surface === 'path';
-      if (!letter.visible) continue;
-      const angle = i * Math.PI * 2 / wave.sprites.length;
-      const x = wave.x + Math.cos(angle) * radius;
-      const z = wave.z + Math.sin(angle) * radius;
-      letter.position.set(x, ground(x, z) + 0.24 + 0.025 * Math.sin(Math.PI * phase), z);
-      const size = 0.095 + 0.012 * Math.sin(Math.PI * phase);
-      letter.scale.set(size, size, 1);
-      letter.material.opacity = opacity;
-      letter.material.color.copy(wave.tint).lerp(rippleTones.path, 0.26);
-    }
+    const age=time-wave.at;
+    wave.mesh.visible=age>=0 && age<rippleDuration;
+    if(!wave.mesh.visible)continue;
+    wave.mesh.position.set(wave.x,ground(wave.x,wave.z)+0.18,wave.z);
+    wave.mesh.material.uniforms.uPhase.value=age/rippleDuration;
+    wave.mesh.material.uniforms.uWater.value=wave.surface==='water'?1:0;
+    wave.mesh.material.uniforms.uTint.value.copy(wave.tint);
   }
   for (const { points, origin, motion } of waterObjects) {
     const positions = points.geometry.attributes.position;
     for (let i = 0; i < positions.count; i++) {
       const k = i * 3;
       if (motion === 'river') {
-        let z = origin[k + 2] + (time * 0.11) % 0.18
-          + 0.035 * Math.sin(origin[k + 2] * 0.85 - time * 0.62);
+        let z = origin[k + 2] + (time * 0.045) % 0.15
+          + 0.015 * Math.sin(origin[k + 2] * 0.85 - time * 0.38);
         const lateral = origin[k] - riverX(origin[k + 2]);
-        let x = riverX(z) + lateral + Math.sin(z * 0.7 - time * 0.72) * 0.045;
+        let x = riverX(z) + lateral + Math.sin(z * 0.7 - time * 0.38) * 0.018;
         let lift = 0;
         for (const step of footsteps) {
           if (step.surface !== 'water') continue;
           const age = time - step.at;
-          if (age < 0 || age > 0.6) continue;
+          if (age < 0 || age > rippleDuration) continue;
           const dx = x - step.x, dz = z - step.z;
           const distance = Math.hypot(dx, dz);
           if (distance > 0.7) continue;
-          const pulse = Math.exp(-Math.pow((distance - age * 0.72) / 0.18, 2))
-            * Math.sin(Math.PI * age / 0.6);
+          const front=age*0.40;
+          const pulse=Math.sin((distance-front)*28.0)
+            * Math.exp(-Math.pow((distance-front)/0.22,2))
+            * Math.sin(Math.PI*age/rippleDuration);
           x += dx / Math.max(distance, 0.1) * pulse * 0.045;
           z += dz / Math.max(distance, 0.1) * pulse * 0.045;
           lift += pulse * 0.075;
         }
         positions.array[k] = x;
-        positions.array[k + 1] = ground(x, z) + 0.09 + Math.sin(z * 0.85 - time * 0.72) * 0.055 + lift;
+        positions.array[k + 1] = ground(x, z) + 0.11 + Math.sin(z * 0.85 - time * 0.38) * 0.024 + lift;
         positions.array[k + 2] = z;
       } else if (motion === 'cascade') {
         const sourceT = (origin[k + 2] - cascadeStartZ) / (cascadeEndZ - cascadeStartZ);

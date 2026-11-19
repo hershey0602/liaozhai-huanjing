@@ -9,7 +9,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
   const next = document.getElementById('story-next');
   const progress = document.getElementById('story-progress');
   const ending = document.getElementById('story-ending');
-  document.getElementById('story-replay').addEventListener('click',()=>{ location.href=location.pathname+'?v=yingning-story-39'; });
+  document.getElementById('story-replay').addEventListener('click',()=>{ location.href=location.pathname+'?space=prologue&v=sea-verse-66'; });
   const marker = document.getElementById('story-marker');
   const hint = document.querySelector('.hint');
   const worldPoint = new THREE.Vector3();
@@ -64,8 +64,18 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
     if(stage===2) hint.innerHTML='古树旁设有茶席 · 走近点击「坐于茶席」';
     if(stage===3) hint.innerHTML='茶席对白结束 · 点击婴宁旁的「递出梅枝」';
     if(stage===4) hint.innerHTML='留在古树旁，听婴宁说一段往事';
-    if(stage===5) hint.innerHTML='沿花径离开，返回书页';
+    if(stage===5) hint.innerHTML='花影归卷 · 随书入海';
   };
+  let departing=false;
+  function finishChapter(){
+    if(departing)return;departing=true;step(6);
+    panel.classList.remove('visible');marker.hidden=true;
+    ending.querySelector('p').textContent='花影归卷，下一页是海上的相逢。';
+    ending.querySelector('button').hidden=true;
+    const shortcut=ending.querySelector('.next-space');if(shortcut)shortcut.hidden=true;
+    ending.classList.add('visible');
+    setTimeout(()=>{location.href='?space=palace&v=sea-verse-66';},2600);
+  }
   function show(lines, done) {
     state.lines=lines;state.index=0;state.done=done;state.active=true;
     panel.classList.add('visible');
@@ -119,8 +129,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
       }
       onCharacterClick();
     } else if(state.stage===5){
-      step(6);ending.classList.add('visible');
-      panel.classList.remove('visible');marker.hidden=true;
+      finishChapter();
     }
   });
   function update(time, characterVisible) {
@@ -154,7 +163,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
         ['婴宁 · 往事','“妾本狐产，母临去，以妾托鬼母。”她第一次说起自己的身世。'],
         ['婴宁 · 往事','“老母，岑寂山阿，无人怜而合厝之。”笑意渐隐，她望向山深处。'],
         ['花坞 · 尾声','那枝上元节的梅花，留住了相遇，也让她终于说出埋在心里的牵挂。'],
-      ],()=>step(5));
+      ],()=>{step(5);finishChapter();});
     }
   }
   step(0);progress.classList.remove('visible');marker.hidden=true;

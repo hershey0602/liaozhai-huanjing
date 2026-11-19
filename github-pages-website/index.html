@@ -3,18 +3,19 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-        <meta name="theme-color" content="#f5f0e7">
-    <title>聊斋幻城 · 南山花坞 · 文字山水</title>
+        <meta name="theme-color" content="#f0e6d3">
+    <title>聊斋幻城 · 书中五境</title>
+    <link rel="stylesheet" href="./spaces.css?build=sea-verse-66">
     <style>
-      :root { --ink:#534b42; --green:#665e50; --gold:#9d8061; --paper:#f5f0e7; }
+      :root { --ink:#534b42; --green:#665e50; --gold:#9d8061; --paper:#f0e6d3; }
       * { box-sizing:border-box; }
-      html,body { width:100%; height:100%; margin:0; overflow:hidden; background:#f5f0e7; }
+      html,body { width:100%; height:100%; margin:0; overflow:hidden; background:#f0e6d3; }
       body { font-family:"KaiTi","STKaiti","Noto Serif CJK SC","Songti SC",serif; color:var(--ink); }
       button { font:inherit; }
       #stage { position:fixed; inset:0; }
       #stage canvas { display:block; touch-action:none; }
-      .atmosphere { position:fixed; inset:0; pointer-events:none; background:radial-gradient(ellipse at 55% 19%,rgba(255,252,242,.21),transparent 48%),linear-gradient(to bottom,rgba(250,245,232,.08),transparent 43%,rgba(99,86,64,.045)); }
-      .paper-grain { position:fixed; inset:0; pointer-events:none; opacity:.10; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E"); }
+      .atmosphere { position:fixed; inset:0; pointer-events:none; background:radial-gradient(ellipse at 55% 19%,rgba(255,244,217,.12),transparent 48%),linear-gradient(to bottom,rgba(243,224,185,.09),transparent 43%,rgba(99,86,64,.045)); }
+      .paper-grain { position:fixed; inset:0; pointer-events:none; opacity:.065; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E"); }
       .topbar { position:fixed; top:20px; left:26px; right:26px; z-index:10; display:flex; justify-content:space-between; align-items:flex-start; pointer-events:none; }
       .brand small { display:block; font-size:11px; letter-spacing:.35em; color:#9a7f67; }
       .brand strong { display:block; margin-top:4px; font-weight:500; font-size:29px; letter-spacing:.13em; text-shadow:0 1px 0 #fff8; }
@@ -61,7 +62,7 @@
       .prologue-ui .prologue-instruction { margin:12px 0 5px; font-family:"华文行楷","STXingkai","KaiTi",serif; font-size:27px; letter-spacing:.14em; }
       .prologue-ui .prologue-sub { font-family:"华文行楷","STXingkai","KaiTi",serif; font-size:16px; letter-spacing:.14em; color:#a49983; }
       .arrival-veil { position:fixed; z-index:14; inset:0; pointer-events:none; visibility:hidden;
-        opacity:0; background:#f5f0e7; }
+        opacity:0; background:#f0e6d3; }
       body.arrival .arrival-veil { visibility:visible; opacity:1; }
       body.arrival.arrival-clearing .arrival-veil { opacity:0; transition:opacity 1.45s ease; }
       body.arrival-observe .move-controls { opacity:.48; pointer-events:none; }
@@ -102,13 +103,13 @@
       <p class="story-text" id="story-text"></p>
       <button id="story-next">继续</button>
     </section>
-    <div class="story-ending" id="story-ending"><div class="book">聊斋志异</div><p>知我者，其在青林黑塞间乎。</p><button id="story-replay">再翻一遍</button></div>
+    <div class="story-ending" id="story-ending"><div class="book">聊斋志异</div><p>知我者，其在青林黑塞间乎。</p><button id="story-replay">再翻一遍</button><a class="next-space" href="?space=palace&v=sea-verse-66">随书入海 · 玄溟鲛宫</a></div>
     <div class="move-controls" aria-label="移动控制">
       <button class="up" data-direction="forward" aria-label="向前">↑</button>
       <button class="left" data-direction="left" aria-label="向左">←</button>
       <button class="down" data-direction="back" aria-label="后退">↓</button>
       <button class="right" data-direction="right" aria-label="向右">→</button>
     </div>
-<script type="module" src="./scene.js?build=geometric-fox-56"></script>
+<script type="module" src="./journey.js?build=sea-verse-66"></script>
   </body>
 </html>

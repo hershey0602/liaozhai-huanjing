@@ -355,7 +355,7 @@ export function createPrologue(renderer, onEnter) {
       const flight = clamp(elapsed / 4.2, 0, 1);
       const worldTone = new THREE.Color('#030405');
       worldTone.lerp(new THREE.Color('#33291f'), smooth(0.64, 0.83, flight));
-      worldTone.lerp(new THREE.Color('#f5f0e7'), smooth(0.82, 1, flight));
+      worldTone.lerp(new THREE.Color('#f0e6d3'), smooth(0.82, 1, flight));
       world.background.copy(worldTone);
       book.position.y = -5.1 * smooth(0.05, 0.82, flight);
       book.scale.setScalar(1 - 0.68 * smooth(0.17, 1, flight));
