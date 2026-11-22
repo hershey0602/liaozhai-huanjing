@@ -1,4 +1,4 @@
-import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,roof,glow,plaque,calligraphy} from './space-kit.js?build=sea-verse-66';
+import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,roof,glow,plaque,calligraphy} from './space-kit.js?build=room-light-68';
 import {mergeGeometries} from './assets/utils/BufferGeometryUtils.js';
 
 // Small carved details share materials and are baked into a few static meshes.
@@ -212,6 +212,7 @@ export function finishStudy(k,room,{finale=false}={}){
   room.finishes=p;
 }
 
+export function interiorPalette(k){environment(k);return palette();}
 export function finishEnding(k,scroll){
   const p=palette(),d=group(k.world,0,0,-8.55);
   // A brocade hanging, paired lamps and carved frame give the portrait a setting.

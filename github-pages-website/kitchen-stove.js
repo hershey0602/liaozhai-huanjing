@@ -1,4 +1,4 @@
-import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,paperTexture} from './space-kit.js?build=sea-verse-66';
+import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,paperTexture} from './space-kit.js?build=room-light-68';
 
 function lathe(parent,profile,material,x=0,y=0,z=0){return mesh(parent,new THREE.LatheGeometry(profile.map(p=>new THREE.Vector2(...p)),48),material,x,y,z);}
 function ring(parent,r,t,material,x,y,z){const m=mesh(parent,new THREE.TorusGeometry(r,t,8,64),material,x,y,z);m.rotation.x=Math.PI/2;return m;}

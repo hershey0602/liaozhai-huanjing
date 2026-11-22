@@ -1,7 +1,7 @@
-import {THREE,seeded,mat,group,mesh,box,cylinder,calligraphy,makeInkFigure} from './space-kit.js?build=sea-verse-66';
-import {makeStudyRoom} from './study-scene.js?build=sea-verse-66';
-import {finishEnding} from './scene-finishes.js?build=sea-verse-66';
-import {flexibleLeaf,endingPaperMaterial,turnProgress} from './ending-paper.js?build=sea-verse-66';
+import {THREE,seeded,mat,group,mesh,box,cylinder,calligraphy,makeInkFigure} from './space-kit.js?build=room-light-68';
+import {heritageRoom} from './heritage-room.js?build=room-light-68';
+
+import {flexibleLeaf,endingPaperMaterial,turnProgress} from './ending-paper.js?build=room-light-68';
 
 const comments=[
   ['异史氏曰 · 婴宁','观其孜孜憨笑，似全无心肝者；而墙下恶作剧，其黠孰甚焉。至凄恋鬼母，反笑为哭，我婴宁殆隐于笑者矣。'],
@@ -9,18 +9,18 @@ const comments=[
   ['异史氏曰 · 小谢','绝世佳人，求一而难之，何遽得两哉！事千古而一见，惟不私奔女者能遘之也。'],
 ];
 const excerpts=['我婴宁殆隐于笑者矣。','花面逢迎，世情如鬼。','绝世佳人，求一而难之，何遽得两哉！'];
-export const endingTiming={portrait:2.5,window:1,comment:4,closing:2};
+export const endingTiming={portrait:8,window:1,comment:4,closing:2};
 export function buildSpace(k){
-  const {world,updates}=k,rnd=seeded(9721);const room=makeStudyRoom(k,{finale:true});
-  k.locked=true;k.ambient.intensity=.5;k.sun.intensity=.4;k.scene.background.set('#302d24');k.setView(0,5.8,0,.055);
+  const {world,updates}=k,rnd=seeded(9721);const room=heritageRoom(k);
+  k.locked=true;k.scene.background.set('#b9a786');k.setView(0,4.5,0,.025);
   const roomMaterials=new Map();world.traverse(o=>{if(o.isMesh)for(const m of Array.isArray(o.material)?o.material:[o.material]){if(!roomMaterials.has(m)){roomMaterials.set(m,m.opacity);m.transparent=true;m.needsUpdate=true;}}});
-  room.ghosts.forEach(g=>g.visible=false);
-  const scroll=group(world,0,0,-8.2);const portrait=new THREE.TextureLoader().load('./assets/pusongling-reference.jpg');portrait.colorSpace=THREE.SRGBColorSpace;
-  const portraitMaterial=new THREE.MeshBasicMaterial({map:portrait,transparent:true,opacity:0});mesh(scroll,new THREE.PlaneGeometry(2.7,4.7),portraitMaterial,0,3.0,0);
+
+  const scroll=group(world,0,1.0,-4.98);scroll.scale.setScalar(.54);const portrait=new THREE.TextureLoader().load('./assets/pusongling-reference.jpg');portrait.colorSpace=THREE.SRGBColorSpace;
+  const portraitMaterial=new THREE.MeshStandardMaterial({map:portrait,transparent:true,opacity:0,roughness:.98,envMapIntensity:.15});mesh(scroll,new THREE.PlaneGeometry(2.7,4.7),portraitMaterial,0,3.0,0);
   const rodMat=mat('#817050');for(const y of [.58,5.4]){const rod=cylinder(scroll,.05,.05,2.95,rodMat,0,y,0);rod.rotation.z=Math.PI/2;}
-  const finish=finishEnding(k,scroll);
+  const finish={root:room.portraitFrame,portraitKey:room.portraitKey,halo:room.halo};
   finish.root.traverse(o=>{if(o.isMesh){const m=o.material;if(!roomMaterials.has(m)){roomMaterials.set(m,m.opacity);m.transparent=true;m.needsUpdate=true;}}});
-  const windowFigure=makeInkFigure(world,7.3,.1,-5.1,{color:'#695c45',opacity:0});windowFigure.rotation.set(0,-.65,.12);
+  const windowFigure=makeInkFigure(world,4.9,.1,-.4,{color:'#695c45',opacity:0});windowFigure.rotation.set(0,-.65,.12);
   const book=group(world,0,1.65,-.5);book.visible=false;book.rotation.x=-.16;
   const cloth=mat('#9b8057'),pageEdge=mat('#c8b48b');box(book,1.7,2.2,.12,cloth,0,0,-.10);box(book,1.58,2.09,.15,pageEdge,0,0,0);
   const pc=document.createElement('canvas');pc.width=512;pc.height=704;const px=pc.getContext('2d');
@@ -46,24 +46,26 @@ export function buildSpace(k){
   const bookMaterials=new Set();book.traverse(o=>{if(o.isMesh)bookMaterials.add(o.material);});
   function revealBook(opacity){for(const m of bookMaterials){m.transparent=true;if(m.uniforms?.uOpacity)m.uniforms.uOpacity.value=opacity;else m.opacity=opacity;}}
   const verse=document.createElement('div');verse.className='ending-verse';verse.setAttribute('aria-live','polite');verse.innerHTML='<small></small><p></p>';document.body.append(verse);
-  const actions=document.createElement('div');actions.className='ending-actions';actions.hidden=true;actions.innerHTML='<a href="?space=prologue&v=sea-verse-66">再启书卷</a><a href="?space=nanshan&intro=0&v=sea-verse-66">重游三境</a>';document.body.append(actions);
+  const actions=document.createElement('div');actions.className='ending-actions';actions.hidden=true;actions.innerHTML='<a href="?space=prologue&v=room-light-68">再启书卷</a><a href="?space=nanshan&intro=0&v=room-light-68">重游三境</a>';document.body.append(actions);
   const textCache=new Map(),motes=[];const words=[...comments.map(a=>a[1]).join('')];
   for(let i=0;i<125;i++){const c=words[i%words.length];if(!textCache.has(c))textCache.set(c,calligraphy(c,{width:128,height:128,size:88,vertical:false,color:'#fff'}));
     const s=new THREE.Sprite(new THREE.SpriteMaterial({map:textCache.get(c),color:'#ceb58a',transparent:true,opacity:0,depthWrite:false}));s.scale.setScalar(.12+rnd()*.09);const origin=new THREE.Vector3((rnd()-.5)*17,.2+rnd()*5,-12+rnd()*22);s.position.copy(origin);world.add(s);motes.push({s,origin,delay:rnd()*.5});}
-  let phase=0,at=k.time,quote=-1,readingAt=null,landedQuote=-1;
+  let phase=0,at=k.time,quote=-1,readingAt=null,landedQuote=-1,exploring=false;
   const read=document.createElement('button');read.className='space-skip ending-read';read.textContent='读完整评语';read.hidden=true;document.body.append(read);
   read.onclick=()=>{if(phase!==2||readingAt!==null)return;readingAt=k.time;read.hidden=true;k.skip.hidden=true;k.say([comments[Math.max(0,quote)]],()=>{at+=k.time-readingAt;readingAt=null;read.hidden=false;k.skip.hidden=false;},'返回合卷');};
-  function nextPhase(){phase++;at=k.time;k.skip.textContent='继续';
+  const tour=document.createElement('button');tour.className='space-skip heritage-tour';tour.textContent='漫游聊斋旧居';document.body.append(tour);tour.onclick=()=>{if(phase!==0)return;exploring=true;portraitMaterial.opacity=1;k.locked=false;document.body.classList.add('heritage-exploring');tour.hidden=true;k.skip.textContent='继续合卷';};
+  function nextPhase(){exploring=false;k.locked=true;document.body.classList.remove('heritage-exploring');tour.hidden=true;k.setView(0,4.5,0,.025);phase++;at=k.time;k.skip.textContent='继续';
     if(phase===2){book.visible=true;read.hidden=false;}
     if(phase===3){read.hidden=true;verse.querySelector('small').textContent='书页将尽';verse.querySelector('p').textContent='有花有酒春常在，无灯无烛夜自明。';verse.classList.add('visible');}
     if(phase>=4){read.hidden=true;k.skip.hidden=true;verse.querySelector('small').textContent='幻散 · 终章';verse.querySelector('p').textContent='我的故事讲完了，后面的故事就交由你们这些后人来讲。';verse.classList.add('visible');actions.hidden=false;}}
-  k.skip.hidden=false;k.skip.textContent='继续';k.skip.onclick=()=>{if(readingAt!==null)return;if(phase===2){const elapsed=k.time-at,index=Math.floor(elapsed/endingTiming.comment)+1;if(index>=3)nextPhase();else at=k.time-index*endingTiming.comment;}else nextPhase();};
+  k.skip.hidden=false;k.skip.textContent='继续';k.skip.onclick=()=>{if(readingAt!==null)return;if(exploring){nextPhase();return;}if(phase===2){const elapsed=k.time-at,index=Math.floor(elapsed/endingTiming.comment)+1;if(index>=3)nextPhase();else at=k.time-index*endingTiming.comment;}else nextPhase();};
+  if(new URLSearchParams(globalThis.location?.search||'').get('tour')==='1')tour.onclick();
   k.clickable(scroll,()=>{if(phase===0)nextPhase();});
   updates.push(t=>{
-    if(readingAt!==null)return;
+    if(readingAt!==null||exploring)return;
     const age=t-at;
     if(phase===0){portraitMaterial.opacity=THREE.MathUtils.smoothstep(age,0,1);if(age>=endingTiming.portrait){nextPhase();return;}}
-    if(phase===1){portraitMaterial.opacity=1-THREE.MathUtils.smoothstep(age,0,endingTiming.window);windowFigure.material.opacity=.25*THREE.MathUtils.smoothstep(age,0,endingTiming.window);k.ambient.intensity=.5-.25*Math.min(1,age/endingTiming.window);k.sun.intensity=.4-.25*Math.min(1,age/endingTiming.window);if(age>=endingTiming.window){nextPhase();return;}}
+    if(phase===1){portraitMaterial.opacity=1-THREE.MathUtils.smoothstep(age,0,endingTiming.window);windowFigure.material.opacity=.25*THREE.MathUtils.smoothstep(age,0,endingTiming.window);k.ambient.intensity=.30-.15*Math.min(1,age/endingTiming.window);k.sun.intensity=0;if(age>=endingTiming.window){nextPhase();return;}}
     if(phase===2){const index=Math.min(2,Math.floor(age/endingTiming.comment)),local=age-index*endingTiming.comment;if(index!==quote){quote=index;rememberPage();verse.querySelector('small').textContent=comments[index][0]+' · 节选';verse.querySelector('p').textContent=excerpts[index];writePage(comments[index][1]);}
       verse.classList.toggle('visible',local<3.7);const turn=turnProgress(local);
       leaf.visible=index>0&&turn<1;leaf.userData.bend(turn);leftPage.visible=true;leftStack.visible=true;leftStack.rotation.y=0;

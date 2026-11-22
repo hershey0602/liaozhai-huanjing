@@ -1,8 +1,9 @@
-import {THREE,seeded,paperTexture,mat,group,mesh,box,cylinder,sphere,curve,plaque,roof,railing,glow,lantern,calligraphy} from './space-kit.js?build=sea-verse-66';
-import {createLetterWriting} from './letter-writing.js?build=sea-verse-66';
-import {finishPalace} from './scene-finishes.js?build=sea-verse-66';
-import {livingSea,dragonThrone} from './crafted-objects.js?build=sea-verse-66';
-import {danceDais} from './royal-fittings.js?build=sea-verse-66';
+import {THREE,seeded,paperTexture,mat,group,mesh,box,cylinder,sphere,curve,plaque,roof,railing,glow,lantern,calligraphy} from './space-kit.js?build=room-light-68';
+import {createLetterWriting} from './letter-writing.js?build=room-light-68';
+import {finishPalace} from './scene-finishes.js?build=room-light-68';
+import {livingSea,dragonThrone} from './crafted-objects.js?build=room-light-68';
+import {verseJadeTree} from './verse-jade-tree.js?build=room-light-68';
+import {danceDais} from './royal-fittings.js?build=room-light-68';
 
 const seaVerse='宫中有玉树一株围可合抱本莹澈如白琉璃中有心淡黄色叶类碧玉细碎有浓阴花开满树每一瓣落锵然作响仙尘路隔不能相依两地同心何必旦夕相守海水复合不可复见';
 export function buildSpace(k){
@@ -91,16 +92,7 @@ export function buildSpace(k){
   const altarLabel=k.hotspot('信笺台 · 落笔',[7.2,2.8,-3.7],atAltar,{stop:1.45,distance:35});k.clickable(altar,()=>altarLabel.action());k.obstacles.push({x:7.2,z:-4,w:3.2,d:1.8});
   // A crystalline tree with a pale yellow heart, jade leaves and agate flowers.
   cylinder(world,3.7,4.1,.28,m.stone,12,.02,8,48);railing(world,7,7.5,10,8,.15,m.jade);box(world,4,.16,1.25,m.stone,8.9,.1,7.8);
-  const tree=group(world,12,.18,8);const trunkPoints=[[0,0,0],[-.3,1.1,.1],[-.12,2.3,.06],[.27,3.4,0],[.16,4.8,-.1]];
-  curve(tree,trunkPoints,.31,m.crystal,.2);curve(tree,trunkPoints,.075,mat('#e6d294',{emissive:'#ae9a60',emissiveIntensity:.2}),.62);
-  const leaves=[],flowers=[];
-  for(let b=0;b<9;b++){const a=b*2.39996,cx=Math.cos(a)*(1.0+b*.07),cz=Math.sin(a)*(1.0+b*.07),cy=3.2+(b%3)*.62;
-    curve(tree,[[0,1.9+b*.15,0],[cx*.45,cy-.4,cz*.55],[cx,cy,cz],[cx*1.3,cy+.38,cz*1.3]],.12,m.crystal,.15);
-    for(let i=0;i<65;i++){const phi=rnd()*6.28,rr=Math.sqrt(rnd())*.9;leaves.push([cx+Math.cos(phi)*rr,cy+rnd()*.8,cz+Math.sin(phi)*rr,rnd()]);if(i%9===0)flowers.push([cx+Math.cos(phi)*rr,cy+.24+rnd()*.7,cz+Math.sin(phi)*rr]);}}
-  const leafMesh=new THREE.InstancedMesh(new THREE.OctahedronGeometry(1,0),mat('#8da992',{roughness:.25,metalness:.08,transparent:true,opacity:.84}),leaves.length);
-  leaves.forEach(([x,y,z,r],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(.5+r,.4+r*5,.2);dummy.scale.set(.13,.035,.26);dummy.updateMatrix();leafMesh.setMatrixAt(i,dummy.matrix);});tree.add(leafMesh);
-  const blossomMesh=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(.12,0),m.lotus,flowers.length);flowers.forEach(([x,y,z],i)=>{dummy.position.set(x,y,z);dummy.scale.set(1,.5,1);dummy.rotation.set(0,i,0);dummy.updateMatrix();blossomMesh.setMatrixAt(i,dummy.matrix);});tree.add(blossomMesh);
-  const falling=[];for(let i=0;i<5;i++){const chip=mesh(tree,new THREE.OctahedronGeometry(.095,0),m.lotus);falling.push(chip);}
+  const {tree,falling}=verseJadeTree(k);
   k.hotspot('玉树 · 听花',[12,4.5,8],()=>{k.chime([740,988,1175]);k.say([['罗刹海市 · 玉树','“本莹澈如白琉璃，中有心淡黄色……叶类碧玉，厚一钱许，细碎有浓阴。”'],['一瓣之声','“每一瓣落，锵然作响。拾视之，如赤瑙雕镂，光明可爱。”']]);},{stop:3.0});
   // A quiet dance dais offers an optional pause under the crystal light.
   danceDais(k,m);
@@ -122,7 +114,7 @@ export function buildSpace(k){
       city.visible=age>7.8&&age<12;curtain.material.opacity=age>9?Math.sin(Math.min(1,(age-9)/3)*Math.PI)*.42:0;if(age>=12)arrive();}
     else {curtain.material.opacity*=.93;upperSea.visible=false;}
     letterGlow.material.opacity=.38+.16*Math.sin(t*1.6);tree.rotation.z=Math.sin(t*.3)*.007;
-    falling.forEach((chip,i)=>{const age=(t*.27+i*.19)%1;chip.position.set(Math.sin(i*2.4)*1.2+Math.sin(t*.4+i)*.2,4.1-age*3.7,Math.cos(i*2.4)*1.2);chip.rotation.set(age*2,i+age,age*.8);chip.material=m.lotus;});
+    falling.forEach((chip,i)=>{const age=(t*.27+i*.19)%1;chip.position.set(Math.sin(i*2.4)*1.2+Math.sin(t*.4+i)*.2,4.1-age*3.7,Math.cos(i*2.4)*1.2);chip.rotation.set(age*2,i+age,age*.8);});
     const age=t-goldAt;stampRing.material.opacity=age>0&&age<2?.6*Math.sin(age/2*Math.PI):0;stampRing.scale.setScalar(.2+Math.max(0,Math.min(2,age))*1.5);
   });
   finishPalace(k,m);

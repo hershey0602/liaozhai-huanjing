@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {walkStep,approachPosition} from './navigation.js?build=room-light-68';
 
 export {THREE};
 const font='KaiTi, STKaiti, "Noto Serif CJK SC", SimSun, serif';
@@ -126,7 +127,7 @@ export function createSpace(key,{title,legend,background='#e9e4d5',fogNear=24,fo
   function drawDialogue(){const line=dialogue.lines[dialogue.index];document.getElementById('story-title').textContent=line[0];document.getElementById('story-text').textContent=line[1];next.textContent=dialogue.index===dialogue.lines.length-1?(dialogue.last||'继续'):'继续';}
   function say(lines,done,last){dialogue={lines,index:0,done,last};panel.classList.add('visible');drawDialogue();}
   function announce(text,duration=5,small=''){caption.textContent='';if(small){const a=document.createElement('small');a.textContent=small;caption.append(a);}caption.append(document.createTextNode(text));caption.classList.add('visible');captionUntil=time+duration;}
-  function go(space){if(transition.classList.contains('visible'))return;locked=true;transition.querySelector('strong').textContent={palace:'玄溟 · 鲛宫',study:'芸庭 · 小榭',ending:'幻散 · 终章',prologue:'书卷 · 启灵',nanshan:'南山 · 花坞'}[space];transition.classList.add('visible');setTimeout(()=>{location.href=`?space=${space}&v=sea-verse-66`;},1200);}
+  function go(space){if(transition.classList.contains('visible'))return;locked=true;transition.querySelector('strong').textContent={palace:'玄溟 · 鲛宫',study:'芸庭 · 小榭',ending:'幻散 · 终章',prologue:'书卷 · 启灵',nanshan:'南山 · 花坞'}[space];transition.classList.add('visible');setTimeout(()=>{location.href=`?space=${space}&v=room-light-68`;},1200);}
   function look(){camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
   function setView(x,z,heading=0,tilt=-.035){camera.position.set(x,floor(x,z)+1.68,z);yaw=heading;pitch=tilt;look();}
   function pointAt(p){yaw=Math.atan2(camera.position.x-p.x,camera.position.z-p.z);pitch=THREE.MathUtils.clamp(Math.atan2(p.y-camera.position.y,Math.hypot(p.x-camera.position.x,p.z-camera.position.z)),-.55,.45);look();}
@@ -134,7 +135,8 @@ export function createSpace(key,{title,legend,background='#e9e4d5',fogNear=24,fo
     const d=Math.hypot(position.x-camera.position.x,position.z-camera.position.z);
     if(d<stop+.4){pointAt(position);action?.();return;}
     const dx=(camera.position.x-position.x)/d,dz=(camera.position.z-position.z)/d;
-    autowalk={from:camera.position.clone(),to:new THREE.Vector3(position.x+dx*stop,0,position.z+dz*stop),at:time,duration:Math.min(3.4,Math.max(1,d/6)),target:position.clone(),done:action};
+    const safe=approachPosition(camera.position,position,stop,obstacles);
+    autowalk={from:camera.position.clone(),to:new THREE.Vector3(safe.x,0,safe.z),at:time,duration:Math.min(3.4,Math.max(1,d/6)),target:position.clone(),done:action};
   }
   function hotspot(name,position,action,{distance=28,stop=2.4,pinNear=0,enabled=()=>true}={}){
     const button=document.createElement('button');button.className='world-label';button.textContent=name;document.body.append(button);
@@ -148,18 +150,18 @@ export function createSpace(key,{title,legend,background='#e9e4d5',fogNear=24,fo
   canvas.addEventListener('pointerup',e=>{if(!down)return;if(Math.hypot(e.clientX-down.startX,e.clientY-down.startY)<8&&!locked){pointer.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(interactive,true);if(hits[0]){let o=hits[0].object;while(o&&!o.userData.interact)o=o.parent;o?.userData.interact?.();}}dragging=false;down=null;});
   canvas.addEventListener('pointercancel',()=>{dragging=false;down=null;});
   const controls=document.querySelectorAll('[data-direction]');
-  for(const b of controls){b.addEventListener('pointerdown',e=>{e.preventDefault();if(locked||dialogue)return;autowalk=null;held=b.dataset.direction;move(.135);b.setPointerCapture(e.pointerId);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{held=null;});}
+  for(const b of controls){b.addEventListener('pointerdown',e=>{e.preventDefault();if(locked)return;autowalk=null;held=b.dataset.direction;move(.135);b.setPointerCapture(e.pointerId);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{held=null;});}
   const keymap={ArrowUp:'forward',ArrowDown:'back',ArrowLeft:'left',ArrowRight:'right'};
-  window.addEventListener('keydown',e=>{if(keymap[e.key]&&!locked&&!dialogue){e.preventDefault();held=keymap[e.key];autowalk=null;}});
+  window.addEventListener('keydown',e=>{if(keymap[e.key]&&!locked){e.preventDefault();held=keymap[e.key];autowalk=null;}});
   window.addEventListener('keyup',e=>{if(keymap[e.key])held=null;});window.addEventListener('blur',()=>{held=null;});
   function move(dt){
     const directions={forward:[-Math.sin(yaw),-Math.cos(yaw)],back:[Math.sin(yaw),Math.cos(yaw)],left:[-Math.cos(yaw),Math.sin(yaw)],right:[Math.cos(yaw),-Math.sin(yaw)]};
     const [dx,dz]=directions[held],speed=3.3;const x=THREE.MathUtils.clamp(camera.position.x+dx*speed*dt,-bounds.x,bounds.x),z=THREE.MathUtils.clamp(camera.position.z+dz*speed*dt,bounds.minZ,bounds.maxZ);
-    if(!obstacles.some(o=>x>o.x-o.w/2-.22&&x<o.x+o.w/2+.22&&z>o.z-o.d/2-.22&&z<o.z+o.d/2+.22)){camera.position.x=x;camera.position.z=z;}camera.position.y=floor(camera.position.x,camera.position.z)+1.68;
+    const safe=walkStep(camera.position,{x,z},obstacles);camera.position.x=safe.x;camera.position.z=safe.z;camera.position.y=floor(camera.position.x,camera.position.z)+1.68;
   }
   const projected=new THREE.Vector3();
   function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last)/1000);last=now;time=(now-startedAt)/1000;
-    if(held&&!locked&&!dialogue)move(dt);
+    if(held&&!locked)move(dt);
     if(autowalk&&!locked){const t=THREE.MathUtils.smoothstep((time-autowalk.at)/autowalk.duration,0,1);camera.position.lerpVectors(autowalk.from,autowalk.to,t);camera.position.y=floor(camera.position.x,camera.position.z)+1.68;pointAt(autowalk.target);if(t>=1){const done=autowalk.done;autowalk=null;done?.();}}
     for(const f of updates)f(time,dt);
     camera.updateMatrixWorld();

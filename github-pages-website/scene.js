@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import { createPrologue } from './prologue.js?build=sea-verse-66';
+import { createPrologue } from './prologue.js?build=room-light-68';
 import { createYingningCharacter } from './yingning-fox.js?build=geometric-fox-56';
-import { createYingningStory } from './yingning-story.js?build=sea-verse-66';
+import { createYingningStory } from './yingning-story.js?build=room-light-68';
 import { createWatercolorLandscape, addWatercolorShrubs, addPaintedHorizons,
   addPaintedStream, addPaintedPath } from './watercolor-landscape.js?build=warm-ink-57';
 
