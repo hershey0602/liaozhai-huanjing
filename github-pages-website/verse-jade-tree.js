@@ -1,4 +1,4 @@
-import {THREE,group,seeded,mesh} from './space-kit.js?build=room-light-68';
+import {THREE,group,seeded,mesh} from './space-kit.js?build=mobile-landscape-69';
 export function verseJadeTree(k){
   const root=group(k.world,12,.18,8);root.name='verse-jade-tree';const rnd=seeded(813),points=[],colors=[],glyphs=[],sizes=[];
   const words=[...new Set([...'宫中有玉树一株围可合抱本莹澈如白琉璃中有心淡黄色叶类碧玉厚一钱许细碎有浓阴常与女啸咏其下花开满树状类薝葡每一瓣落锵然作响光明可爱'])];

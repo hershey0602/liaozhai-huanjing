@@ -1,4 +1,4 @@
-import {THREE} from './space-kit.js?build=room-light-68';
+import {THREE} from './space-kit.js?build=mobile-landscape-69';
 
 export function turnProgress(seconds){
   const t=THREE.MathUtils.clamp((seconds-.18)/1.32,0,1);

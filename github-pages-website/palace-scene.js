@@ -1,9 +1,9 @@
-import {THREE,seeded,paperTexture,mat,group,mesh,box,cylinder,sphere,curve,plaque,roof,railing,glow,lantern,calligraphy} from './space-kit.js?build=room-light-68';
-import {createLetterWriting} from './letter-writing.js?build=room-light-68';
-import {finishPalace} from './scene-finishes.js?build=room-light-68';
-import {livingSea,dragonThrone} from './crafted-objects.js?build=room-light-68';
-import {verseJadeTree} from './verse-jade-tree.js?build=room-light-68';
-import {danceDais} from './royal-fittings.js?build=room-light-68';
+import {THREE,seeded,paperTexture,mat,group,mesh,box,cylinder,sphere,curve,plaque,roof,railing,glow,lantern,calligraphy} from './space-kit.js?build=mobile-landscape-69';
+import {createLetterWriting} from './letter-writing.js?build=mobile-landscape-69';
+import {finishPalace} from './scene-finishes.js?build=mobile-landscape-69';
+import {livingSea,dragonThrone} from './crafted-objects.js?build=mobile-landscape-69';
+import {verseJadeTree} from './verse-jade-tree.js?build=mobile-landscape-69';
+import {danceDais} from './royal-fittings.js?build=mobile-landscape-69';
 
 const seaVerse='宫中有玉树一株围可合抱本莹澈如白琉璃中有心淡黄色叶类碧玉细碎有浓阴花开满树每一瓣落锵然作响仙尘路隔不能相依两地同心何必旦夕相守海水复合不可复见';
 export function buildSpace(k){

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {walkStep,approachPosition} from './navigation.js?build=room-light-68';
+import {walkStep,approachPosition} from './navigation.js?build=mobile-landscape-69';
 
 export {THREE};
 const font='KaiTi, STKaiti, "Noto Serif CJK SC", SimSun, serif';
@@ -127,7 +127,7 @@ export function createSpace(key,{title,legend,background='#e9e4d5',fogNear=24,fo
   function drawDialogue(){const line=dialogue.lines[dialogue.index];document.getElementById('story-title').textContent=line[0];document.getElementById('story-text').textContent=line[1];next.textContent=dialogue.index===dialogue.lines.length-1?(dialogue.last||'继续'):'继续';}
   function say(lines,done,last){dialogue={lines,index:0,done,last};panel.classList.add('visible');drawDialogue();}
   function announce(text,duration=5,small=''){caption.textContent='';if(small){const a=document.createElement('small');a.textContent=small;caption.append(a);}caption.append(document.createTextNode(text));caption.classList.add('visible');captionUntil=time+duration;}
-  function go(space){if(transition.classList.contains('visible'))return;locked=true;transition.querySelector('strong').textContent={palace:'玄溟 · 鲛宫',study:'芸庭 · 小榭',ending:'幻散 · 终章',prologue:'书卷 · 启灵',nanshan:'南山 · 花坞'}[space];transition.classList.add('visible');setTimeout(()=>{location.href=`?space=${space}&v=room-light-68`;},1200);}
+  function go(space){if(transition.classList.contains('visible'))return;locked=true;transition.querySelector('strong').textContent={palace:'玄溟 · 鲛宫',study:'芸庭 · 小榭',ending:'幻散 · 终章',prologue:'书卷 · 启灵',nanshan:'南山 · 花坞'}[space];transition.classList.add('visible');setTimeout(()=>{location.href=`?space=${space}&v=mobile-landscape-69`;},1200);}
   function look(){camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
   function setView(x,z,heading=0,tilt=-.035){camera.position.set(x,floor(x,z)+1.68,z);yaw=heading;pitch=tilt;look();}
   function pointAt(p){yaw=Math.atan2(camera.position.x-p.x,camera.position.z-p.z);pitch=THREE.MathUtils.clamp(Math.atan2(p.y-camera.position.y,Math.hypot(p.x-camera.position.x,p.z-camera.position.z)),-.55,.45);look();}
