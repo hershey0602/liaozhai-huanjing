@@ -1,7 +1,7 @@
-import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
+import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=hold-walk-76';
 import * as THREE from 'three';
-import {followPage,pageCurl} from './book-motion.js?build=wechat-landscape-75';
-import {letterFlight} from './letter-flight.js?build=wechat-landscape-75';
+import {followPage,pageCurl} from './book-motion.js?build=hold-walk-76';
+import {letterFlight} from './letter-flight.js?build=hold-walk-76';
 
 const clamp = THREE.MathUtils.clamp;
 const smooth = (a, b, t) => {

@@ -1,14 +1,15 @@
-import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
+import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=hold-walk-76';
 import * as THREE from 'three';
-import {treeBearing,guideMessage,walkFrameDistance,VALLEY_TAP_STEP} from './tree-navigation.js?build=wechat-landscape-75';
-import {batchStaticInk} from './static-ink-batches.js?build=wechat-landscape-75';
-import {dragView} from './view-drag.js?build=wechat-landscape-75';
-import {opening,yieldToOpening} from './opening.js?build=wechat-landscape-75';
-import { createPrologue } from './prologue.js?build=wechat-landscape-75';
+import {bindHoldControl} from './hold-controls.js?build=hold-walk-76';
+import {treeBearing,guideMessage,walkFrameDistance,VALLEY_TAP_STEP} from './tree-navigation.js?build=hold-walk-76';
+import {batchStaticInk} from './static-ink-batches.js?build=hold-walk-76';
+import {dragView} from './view-drag.js?build=hold-walk-76';
+import {opening,yieldToOpening} from './opening.js?build=hold-walk-76';
+import { createPrologue } from './prologue.js?build=hold-walk-76';
 import { createYingningCharacter } from './yingning-fox.js?build=geometric-fox-56';
-import { createYingningStory } from './yingning-story.js?build=wechat-landscape-75';
+import { createYingningStory } from './yingning-story.js?build=hold-walk-76';
 import { createWatercolorLandscape, addWatercolorShrubs, addPaintedHorizons,
-  addPaintedStream, addPaintedPath } from './watercolor-landscape.js?build=wechat-landscape-75';
+  addPaintedStream, addPaintedPath } from './watercolor-landscape.js?build=hold-walk-76';
 
 const revision = new URLSearchParams(location.search).get('rev') ?? 'source-verse-2';
 const prototypeInk = revision === 'layered-ink-prototype';
@@ -2093,13 +2094,11 @@ function move(direction, amount = .65, startStep = false) {
 let heldDirection=null;
 window.addEventListener('blur',()=>{heldDirection=null;});
 for (const button of document.querySelectorAll('[data-direction]')) {
-  button.addEventListener('pointerdown', event => { event=viewPointer(event);
-    event.preventDefault();
-    button.setPointerCapture(event.pointerId);
+  bindHoldControl(button,()=>{
+    if(prologue?.active||performance.now()<arrivalUnlockAt)return false;
     move(button.dataset.direction, VALLEY_TAP_STEP, true);
     heldDirection=button.dataset.direction;
-  });
-  for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(name, () => {heldDirection=null;});
+  },()=>{if(heldDirection===button.dataset.direction)heldDirection=null;});
 }
 let dragging = false, lastX = 0, lastY = 0, pressX = 0, pressY = 0;
 const yingningRaycaster = new THREE.Raycaster();

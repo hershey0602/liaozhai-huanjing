@@ -1,6 +1,6 @@
-import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
+import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=hold-walk-76';
 import * as THREE from 'three';
-import {createPrologue} from './prologue.js?build=wechat-landscape-75';
+import {createPrologue} from './prologue.js?build=hold-walk-76';
 
 export let opening=null;
 export function startOpening(){

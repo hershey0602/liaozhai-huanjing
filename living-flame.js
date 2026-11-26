@@ -1,4 +1,4 @@
-import {THREE,group,mesh,curve,mat,glow} from './space-kit.js?build=wechat-landscape-75';
+import {THREE,group,mesh,curve,mat,glow} from './space-kit.js?build=hold-walk-76';
 
 // A narrow three-dimensional flame, rooted in a wick. Height-dependent bending
 // moves the tip more than the base; no camera-facing oval sprite is used.

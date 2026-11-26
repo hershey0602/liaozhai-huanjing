@@ -1,9 +1,10 @@
-import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
+import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=hold-walk-76';
 import * as THREE from 'three';
-import {batchRepeatedMeshes} from './render-batches.js?build=wechat-landscape-75';
-import {dragView} from './view-drag.js?build=wechat-landscape-75';
-import {portraitFraming,framedPosition} from './portrait-camera.js?build=wechat-landscape-75';
-import {walkStep,approachPosition} from './navigation.js?build=wechat-landscape-75';
+import {bindHoldControl} from './hold-controls.js?build=hold-walk-76';
+import {batchRepeatedMeshes} from './render-batches.js?build=hold-walk-76';
+import {dragView} from './view-drag.js?build=hold-walk-76';
+import {portraitFraming,framedPosition} from './portrait-camera.js?build=hold-walk-76';
+import {walkStep,approachPosition} from './navigation.js?build=hold-walk-76';
 
 export {THREE};
 const font='KaiTi, STKaiti, "Noto Serif CJK SC", SimSun, serif';
@@ -136,7 +137,7 @@ export function createSpace(key,{title,legend,background='#e9e4d5',fogNear=24,fo
   function drawDialogue(){const line=dialogue.lines[dialogue.index];document.getElementById('story-title').textContent=line[0];document.getElementById('story-text').textContent=line[1];next.textContent=dialogue.index===dialogue.lines.length-1?(dialogue.last||'继续'):'继续';}
   function say(lines,done,last){dialogue={lines,index:0,done,last};panel.classList.add('visible');drawDialogue();}
   function announce(text,duration=5,small=''){caption.textContent='';if(small){const a=document.createElement('small');a.textContent=small;caption.append(a);}caption.append(document.createTextNode(text));caption.classList.add('visible');captionUntil=time+duration;}
-  function go(space){if(transition.classList.contains('visible'))return;locked=true;transition.querySelector('strong').textContent={palace:'玄溟 · 鲛宫',study:'芸庭 · 小榭',ending:'幻散 · 终章',prologue:'书卷 · 启灵',nanshan:'南山 · 花坞'}[space];transition.classList.add('visible');setTimeout(()=>{location.href=`?space=${space}&v=wechat-landscape-75`;},1200);}
+  function go(space){if(transition.classList.contains('visible'))return;locked=true;transition.querySelector('strong').textContent={palace:'玄溟 · 鲛宫',study:'芸庭 · 小榭',ending:'幻散 · 终章',prologue:'书卷 · 启灵',nanshan:'南山 · 花坞'}[space];transition.classList.add('visible');setTimeout(()=>{location.href=`?space=${space}&v=hold-walk-76`;},1200);}
   function look(){camera.rotation.order='YXZ';camera.rotation.set(pitch,yaw,0);}
   function setView(x,z,heading=0,tilt=-.035){entryView={x,y:floor(x,z)+1.68,z,heading,tilt};frameEntry();}
   function pointAt(p){yaw=Math.atan2(camera.position.x-p.x,camera.position.z-p.z);pitch=THREE.MathUtils.clamp(Math.atan2(p.y-camera.position.y,Math.hypot(p.x-camera.position.x,p.z-camera.position.z)),-.55,.45);look();}
@@ -161,7 +162,7 @@ export function createSpace(key,{title,legend,background='#e9e4d5',fogNear=24,fo
   canvas.addEventListener('pointerup',e=>{e=viewPointer(e);if(!down)return;if(Math.hypot(e.clientX-down.startX,e.clientY-down.startY)<8&&!locked){pointer.set(e.clientX/viewSize().width*2-1,1-e.clientY/viewSize().height*2);ray.setFromCamera(pointer,camera);const hits=ray.intersectObjects(interactive,true);if(hits[0]){let o=hits[0].object;while(o&&!o.userData.interact)o=o.parent;o?.userData.interact?.();}}dragging=false;down=null;});
   canvas.addEventListener('pointercancel',()=>{dragging=false;down=null;});
   const controls=document.querySelectorAll('[data-direction]');
-  for(const b of controls){b.addEventListener('pointerdown',e=>{e.preventDefault();if(locked)return;autowalk=null;held=b.dataset.direction;move(.135);b.setPointerCapture(e.pointerId);});for(const ev of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(ev,()=>{held=null;});}
+  for(const b of controls)bindHoldControl(b,()=>{if(locked)return false;autowalk=null;held=b.dataset.direction;move(.135);},()=>{if(held===b.dataset.direction)held=null;});
   const keymap={ArrowUp:'forward',ArrowDown:'back',ArrowLeft:'left',ArrowRight:'right'};
   window.addEventListener('keydown',e=>{if(keymap[e.key]&&!locked){e.preventDefault();held=keymap[e.key];autowalk=null;}});
   window.addEventListener('keyup',e=>{if(keymap[e.key])held=null;});window.addEventListener('blur',()=>{held=null;});

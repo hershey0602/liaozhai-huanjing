@@ -1,4 +1,4 @@
-import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,roof,glow,plaque,calligraphy} from './space-kit.js?build=wechat-landscape-75';
+import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,roof,glow,plaque,calligraphy} from './space-kit.js?build=hold-walk-76';
 import {mergeGeometries} from './assets/utils/BufferGeometryUtils.js';
 
 // Small carved details share materials and are baked into a few static meshes.

@@ -1,4 +1,4 @@
-import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
+import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=hold-walk-76';
 import * as THREE from 'three';
 
 // The encounter is a short chapter with physical clues and a readable dialogue
@@ -10,7 +10,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
   const next = document.getElementById('story-next');
   const progress = document.getElementById('story-progress');
   const ending = document.getElementById('story-ending');
-  document.getElementById('story-replay').addEventListener('click',()=>{ location.href=location.pathname+'?space=prologue&v=wechat-landscape-75'; });
+  document.getElementById('story-replay').addEventListener('click',()=>{ location.href=location.pathname+'?space=prologue&v=hold-walk-76'; });
   const marker = document.getElementById('story-marker');
   const hint = document.querySelector('.hint');
   const worldPoint = new THREE.Vector3();
@@ -75,7 +75,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
     ending.querySelector('button').hidden=true;
     const shortcut=ending.querySelector('.next-space');if(shortcut)shortcut.hidden=true;
     ending.classList.add('visible');
-    setTimeout(()=>{location.href='?space=palace&v=wechat-landscape-75';},2600);
+    setTimeout(()=>{location.href='?space=palace&v=hold-walk-76';},2600);
   }
   function show(lines, done) {
     state.lines=lines;state.index=0;state.done=done;state.active=true;

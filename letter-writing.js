@@ -1,4 +1,4 @@
-import {viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
+import {viewPointer,viewRect} from './view-viewport.js?build=hold-walk-76';
 export function createLetterWriting(kit,onComplete){
   const modal=document.createElement('section');modal.className='letter-modal';modal.hidden=true;
   modal.setAttribute('aria-label','信笺台 · 愿赴尘缘');modal.innerHTML=`

@@ -1,4 +1,4 @@
-import {THREE} from './space-kit.js?build=wechat-landscape-75';
+import {THREE} from './space-kit.js?build=hold-walk-76';
 
 export function turnProgress(seconds){
   const t=THREE.MathUtils.clamp((seconds-.18)/1.32,0,1);

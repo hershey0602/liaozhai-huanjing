@@ -1,4 +1,4 @@
-import {applyViewLayout,viewSize} from './view-viewport.js?build=wechat-landscape-75';
+import {applyViewLayout,viewSize} from './view-viewport.js?build=hold-walk-76';
 export function isMobileVisitor(nav,viewport){
   return /Android|iPhone|iPad|iPod|Mobile/i.test(nav.userAgent||'')||((nav.maxTouchPoints||0)>0&&Math.min(viewport.width,viewport.height)<900);
 }
