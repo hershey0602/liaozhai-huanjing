@@ -1,11 +1,13 @@
 import * as THREE from 'three';
-import {dragView} from './view-drag.js?build=fluid-book-72';
-import {opening,yieldToOpening} from './opening.js?build=fluid-book-72';
-import { createPrologue } from './prologue.js?build=fluid-book-72';
+import {treeBearing,guideMessage,walkFrameDistance,VALLEY_TAP_STEP} from './tree-navigation.js?build=tree-guide-74';
+import {batchStaticInk} from './static-ink-batches.js?build=tree-guide-74';
+import {dragView} from './view-drag.js?build=tree-guide-74';
+import {opening,yieldToOpening} from './opening.js?build=tree-guide-74';
+import { createPrologue } from './prologue.js?build=tree-guide-74';
 import { createYingningCharacter } from './yingning-fox.js?build=geometric-fox-56';
-import { createYingningStory } from './yingning-story.js?build=fluid-book-72';
+import { createYingningStory } from './yingning-story.js?build=tree-guide-74';
 import { createWatercolorLandscape, addWatercolorShrubs, addPaintedHorizons,
-  addPaintedStream, addPaintedPath } from './watercolor-landscape.js?build=fluid-book-72';
+  addPaintedStream, addPaintedPath } from './watercolor-landscape.js?build=tree-guide-74';
 
 const revision = new URLSearchParams(location.search).get('rev') ?? 'source-verse-2';
 const prototypeInk = revision === 'layered-ink-prototype';
@@ -47,7 +49,7 @@ hillsideSun.position.set(-17, 24, 13);
 scene.add(hillsideSun);
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.05, 155);
 const renderer = opening?.renderer ?? new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, document.body.classList.contains('mobile-visitor') ? 1.25 : 1.6));
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 if(!opening)stage.appendChild(renderer.domElement);
@@ -1641,6 +1643,7 @@ if (expandedInk) {
 const materials = [];
 const waterObjects = [];
 const pathObjects = [];
+const staticInk=[];
 for (const bucket of buckets.values()) {
   if(materials.length%8===0)await yieldToOpening();
   if (expandedInk && (bucket.motion === 'river' || bucket.motion === 'path')) continue;
@@ -1652,6 +1655,7 @@ for (const bucket of buckets.values()) {
     uniforms: {
       uMap: { value: glyphTexture(bucket.char) },
       uViewport: { value: renderer.domElement.height },
+      uPointCap: {value:renderer.getPixelRatio()/(document.body.classList.contains('mobile-visitor')?1.25:1.6)},
       uFog: { value: new THREE.Color('#f0e6d3') },
     },
     vertexShader: [
@@ -1660,6 +1664,7 @@ for (const bucket of buckets.values()) {
       'varying vec3 vColor;',
       'varying float vDistance;',
       'uniform float uViewport;',
+      'uniform float uPointCap;',
       'void main() {',
       '  vColor = color;',
       '  vec4 view = modelViewMatrix * vec4(position, 1.0);',
@@ -1667,7 +1672,7 @@ for (const bucket of buckets.values()) {
       '  float depth = max(0.35, -view.z);',
       '  float inkWash = smoothstep(5.0, 17.0, depth);',
       '  float maxSize = aSize < 0.12 ? 18.0 : (aSize < 0.25 ? 27.0 : 38.0);',
-      '  gl_PointSize = clamp(aSize * uViewport / pow(depth, 1.10) * mix(1.0, 1.5, inkWash), 1.0, maxSize);',
+      '  gl_PointSize = clamp(aSize * uViewport / pow(depth, 1.10) * mix(1.0, 1.5, inkWash), 1.0, maxSize*uPointCap);',
       '  gl_Position = projectionMatrix * view;',
       '}',
     ].join('\n'),
@@ -1678,9 +1683,9 @@ for (const bucket of buckets.values()) {
       'varying float vDistance;',
       'void main() {',
       '  vec4 glyph = texture2D(uMap, vec2(gl_PointCoord.x, 1.0 - gl_PointCoord.y));',
-      '  float inkWash = smoothstep(9.0, 32.0, vDistance);',
+      '  float inkWash = smoothstep(18.0, 48.0, vDistance);',
       '  float brush = 1.0 - smoothstep(0.20, 0.92, length(gl_PointCoord * 2.0 - 1.0));',
-      '  float alpha = mix(smoothstep(0.04, 0.94, glyph.a) * 0.86, brush * 0.18, inkWash * 0.48);',
+      '  float alpha = mix(smoothstep(0.04, 0.94, glyph.a) * 0.86, brush * 0.18, inkWash * 0.22);',
       '  if (alpha < 0.06) discard;',
       '  float fog = clamp((vDistance - 28.0) / 83.0, 0.0, 0.72);',
       '  vec3 ink = mix(vColor, uFog, fog);',
@@ -1694,11 +1699,14 @@ for (const bucket of buckets.values()) {
   const points = new THREE.Points(geometry, material);
   points.frustumCulled = false;
   scene.add(points);
+  if(bucket.motion==='still')staticInk.push({char:bucket.char,points});
   if (bucket.motion === 'path') pathObjects.push({ points, origin: Float32Array.from(bucket.positions),
     sizes: Float32Array.from(bucket.sizes), colors: Float32Array.from(bucket.colors) });
   else if (bucket.motion !== 'still') waterObjects.push({ points, origin: Float32Array.from(bucket.positions), motion: bucket.motion });
 }
 
+const batchedInk=batchStaticInk(scene,staticInk);
+if(batchedInk)materials.push(batchedInk.material);
 const sceneView = new URLSearchParams(location.search).get('view');
 let yaw = prototypeInk ? -0.44 : expandedInk
   ? sceneView === 'garden' ? 0.02 : sceneView === 'village' ? -0.05
@@ -1834,18 +1842,29 @@ const laughLetters = encounterTree ? Array.from({ length:3 }, (_, i) => {
 const treeGazeDirection = new THREE.Vector3();
 const viewerGazeDirection = new THREE.Vector3();
 const treeTagPoint = new THREE.Vector3();
+let guideAim=null;
+const treeGuide=document.createElement('button');treeGuide.className='tree-guide';treeGuide.type='button';treeGuide.hidden=true;
+treeGuide.setAttribute('aria-label','看向笑声古树');treeGuide.title='点击转向古树，再按向前靠近';document.body.append(treeGuide);
+treeGuide.onclick=()=>{
+  if(!encounterTree)return;
+  const target=encounterState.phase>=2&&yingningCharacter?.actor.visible?{x:yingningCharacter.actor.position.x,y:yingningCharacter.actor.position.y+1,z:yingningCharacter.actor.position.z}:{x:encounterTree.x,y:encounterTree.floor+2,z:encounterTree.z};
+  const dx=target.x-camera.position.x,dz=target.z-camera.position.z,bearing=treeBearing(dx,dz,yaw);
+  guideAim={at:performance.now(),fromYaw:yaw,fromPitch:pitch,toYaw:bearing.heading,toPitch:THREE.MathUtils.clamp(Math.atan2(target.y-camera.position.y,Math.hypot(dx,dz)),-.46,.52)};
+};
 function updateEncounter(time) {
   if (!encounterTree) return;
   const state = encounterState;
   const distance = Math.hypot(camera.position.x - encounterTree.x,
     camera.position.z - encounterTree.z);
+  treeGuide.hidden=(yingningStory?.state.stage??0)>0||!!yingningStory?.state.active;
+  if(!treeGuide.hidden){const message=guideMessage(treeBearing(encounterTree.x-camera.position.x,encounterTree.z-camera.position.z,yaw),distance,state.phase);if(treeGuide.textContent!==message)treeGuide.textContent=message;}
   if (ancientTreeTag) {
     camera.updateMatrixWorld();
     treeTagPoint.set(encounterTree.x, encounterTree.floor + 5.9,
       encounterTree.z).project(camera);
     const inView = treeTagPoint.z > -1 && treeTagPoint.z < 1
       && Math.abs(treeTagPoint.x) < 0.86 && treeTagPoint.y > -0.78 && treeTagPoint.y < 0.78;
-    ancientTreeTag.classList.toggle('visible', distance < 33 && distance > 3 && inView);
+    ancientTreeTag.classList.toggle('visible', distance > 3 && inView);
     if (inView) {
       ancientTreeTag.style.left = `${(treeTagPoint.x * 0.5 + 0.5) * innerWidth}px`;
       ancientTreeTag.style.top = `${(-treeTagPoint.y * 0.5 + 0.5) * innerHeight}px`;
@@ -2044,8 +2063,9 @@ function addFootstep() {
     }
   }
 }
-function move(direction, amount = 0.42, startStep = false) {
+function move(direction, amount = .65, startStep = false) {
   if (prologue?.active || performance.now() < arrivalUnlockAt) return;
+  guideAim=null;
   let dx = 0, dz = 0;
   if (direction === 'forward') { dx = Math.sin(yaw); dz = -Math.cos(yaw); }
   if (direction === 'back') { dx = -Math.sin(yaw); dz = Math.cos(yaw); }
@@ -2069,15 +2089,16 @@ function move(direction, amount = 0.42, startStep = false) {
     }
   }
 }
+let heldDirection=null;
+window.addEventListener('blur',()=>{heldDirection=null;});
 for (const button of document.querySelectorAll('[data-direction]')) {
-  let timer;
   button.addEventListener('pointerdown', event => {
     event.preventDefault();
     button.setPointerCapture(event.pointerId);
-    move(button.dataset.direction, 0.45, true);
-    timer = setInterval(() => move(button.dataset.direction, 0.20), 55);
+    move(button.dataset.direction, VALLEY_TAP_STEP, true);
+    heldDirection=button.dataset.direction;
   });
-  for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(name, () => clearInterval(timer));
+  for (const name of ['pointerup', 'pointercancel', 'lostpointercapture']) button.addEventListener(name, () => {heldDirection=null;});
 }
 let dragging = false, lastX = 0, lastY = 0, pressX = 0, pressY = 0;
 const yingningRaycaster = new THREE.Raycaster();
@@ -2108,6 +2129,7 @@ renderer.domElement.addEventListener('pointermove', event => {
   if (prologue?.active) { prologue.pointerMove(event); return; }
   if (performance.now() < arrivalUnlockAt) return;
   if (!dragging) return;
+  guideAim=null;
   ({yaw,pitch}=dragView(yaw,pitch,event.clientX-lastX,event.clientY-lastY,{speedX:.0044,speedY:.0031,min:-.46,max:.52}));
   lastX = event.clientX; lastY = event.clientY;
   updateCamera();
@@ -2137,13 +2159,15 @@ const rippleInk = new THREE.Color('#8e806b');
 const rippleDuration = 1.85;
 function animate() {
   requestAnimationFrame(animate);
-  const time = clock.getElapsedTime();
+  const dt=clock.getDelta(),time=clock.elapsedTime;
   if (paintedStreamMaterial) paintedStreamMaterial.uniforms.uTime.value = time;
   if (paintedPathMaterial) paintedPathMaterial.uniforms.uTime.value = time;
   if (prologue?.active) {
     prologue.update(performance.now() / 1000);
     return;
   }
+  if(heldDirection)move(heldDirection,walkFrameDistance(dt));
+  if(guideAim){const t=THREE.MathUtils.smoothstep((performance.now()-guideAim.at)/450,0,1);yaw=THREE.MathUtils.lerp(guideAim.fromYaw,guideAim.toYaw,t);pitch=THREE.MathUtils.lerp(guideAim.fromPitch,guideAim.toPitch,t);updateCamera();if(t>=1)guideAim=null;}
   updateEncounter(time);
   for (const { points, origin, sizes, colors } of pathObjects) {
     const position = points.geometry.attributes.position;

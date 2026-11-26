@@ -1,7 +1,7 @@
-import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,plaque,calligraphy,glow} from './space-kit.js?build=fluid-book-72';
-import {historicSurfaces,finishHistoricLighting} from './heritage-finishes.js?build=fluid-book-72';
-import {interiorPalette} from './scene-finishes.js?build=fluid-book-72';
-import {bakeCarvings} from './royal-fittings.js?build=fluid-book-72';
+import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,plaque,calligraphy,glow} from './space-kit.js?build=tree-guide-74';
+import {historicSurfaces,finishHistoricLighting} from './heritage-finishes.js?build=tree-guide-74';
+import {interiorPalette} from './scene-finishes.js?build=tree-guide-74';
+import {bakeCarvings} from './royal-fittings.js?build=tree-guide-74';
 
 function texture(draw,size=512){const c=document.createElement('canvas');c.width=c.height=size;draw(c.getContext('2d'),size);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;}
 export function heritageRoom(k){

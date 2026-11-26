@@ -1,7 +1,7 @@
-import {THREE,seeded,mat,group,mesh,box,cylinder,calligraphy,makeInkFigure} from './space-kit.js?build=fluid-book-72';
-import {heritageRoom} from './heritage-room.js?build=fluid-book-72';
+import {THREE,seeded,mat,group,mesh,box,cylinder,calligraphy,makeInkFigure} from './space-kit.js?build=tree-guide-74';
+import {heritageRoom} from './heritage-room.js?build=tree-guide-74';
 
-import {flexibleLeaf,endingPaperMaterial,turnProgress} from './ending-paper.js?build=fluid-book-72';
+import {flexibleLeaf,endingPaperMaterial,turnProgress} from './ending-paper.js?build=tree-guide-74';
 
 const comments=[
   ['异史氏曰 · 婴宁','观其孜孜憨笑，似全无心肝者；而墙下恶作剧，其黠孰甚焉。至凄恋鬼母，反笑为哭，我婴宁殆隐于笑者矣。'],
@@ -46,7 +46,7 @@ export function buildSpace(k){
   const bookMaterials=new Set();book.traverse(o=>{if(o.isMesh)bookMaterials.add(o.material);});
   function revealBook(opacity){for(const m of bookMaterials){m.transparent=true;if(m.uniforms?.uOpacity)m.uniforms.uOpacity.value=opacity;else m.opacity=opacity;}}
   const verse=document.createElement('div');verse.className='ending-verse';verse.setAttribute('aria-live','polite');verse.innerHTML='<small></small><p></p>';document.body.append(verse);
-  const actions=document.createElement('div');actions.className='ending-actions';actions.hidden=true;actions.innerHTML='<a href="?space=prologue&v=fluid-book-72">再启书卷</a><a href="?space=nanshan&intro=0&v=fluid-book-72">重游三境</a>';document.body.append(actions);
+  const actions=document.createElement('div');actions.className='ending-actions';actions.hidden=true;actions.innerHTML='<a href="?space=prologue&v=tree-guide-74">再启书卷</a><a href="?space=nanshan&intro=0&v=tree-guide-74">重游三境</a>';document.body.append(actions);
   const textCache=new Map(),motes=[];const words=[...comments.map(a=>a[1]).join('')];
   for(let i=0;i<125;i++){const c=words[i%words.length];if(!textCache.has(c))textCache.set(c,calligraphy(c,{width:128,height:128,size:88,vertical:false,color:'#fff'}));
     const s=new THREE.Sprite(new THREE.SpriteMaterial({map:textCache.get(c),color:'#ceb58a',transparent:true,opacity:0,depthWrite:false}));s.scale.setScalar(.12+rnd()*.09);const origin=new THREE.Vector3((rnd()-.5)*17,.2+rnd()*5,-12+rnd()*22);s.position.copy(origin);world.add(s);motes.push({s,origin,delay:rnd()*.5});}

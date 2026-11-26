@@ -1,4 +1,4 @@
-import {THREE,group,mesh,cylinder,sphere,curve,mat,glow} from './space-kit.js?build=fluid-book-72';
+import {THREE,group,mesh,cylinder,sphere,curve,mat,glow} from './space-kit.js?build=tree-guide-74';
 import {mergeGeometries} from './assets/utils/BufferGeometryUtils.js';
 
 // Carvings are modelled separately, then share one draw call per material.

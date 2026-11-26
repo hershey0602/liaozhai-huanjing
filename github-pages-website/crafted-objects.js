@@ -1,5 +1,5 @@
-import {THREE,group,mesh,box,cylinder,sphere,curve,mat,pageMaterial,seeded} from './space-kit.js?build=fluid-book-72';
-import {enrichThrone} from './royal-fittings.js?build=fluid-book-72';
+import {THREE,group,mesh,box,cylinder,sphere,curve,mat,pageMaterial,seeded} from './space-kit.js?build=tree-guide-74';
+import {enrichThrone} from './royal-fittings.js?build=tree-guide-74';
 
 export function waveHeight(x,z,t){return .055*Math.sin(x*.65+z*.42-t*.68)+.031*Math.sin(x*1.22-z*.77-t*.91)+.017*Math.sin(x*2.1+z*1.55-t*.54);}
 export function livingSea(ink,{repeats=[12,6],strength=.86,opacity=1}={}){return new THREE.ShaderMaterial({uniforms:{uTime:{value:0},uInk:{value:ink},uRepeat:{value:new THREE.Vector2(...repeats)},uInkStrength:{value:strength},uOpacity:{value:opacity}},side:THREE.DoubleSide,transparent:opacity<1,depthWrite:opacity===1,

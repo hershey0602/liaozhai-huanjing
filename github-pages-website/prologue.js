@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import {followPage,pageCurl} from './book-motion.js?build=fluid-book-72';
-import {letterFlight} from './letter-flight.js?build=fluid-book-72';
+import {followPage,pageCurl} from './book-motion.js?build=tree-guide-74';
+import {letterFlight} from './letter-flight.js?build=tree-guide-74';
 
 const clamp = THREE.MathUtils.clamp;
 const smooth = (a, b, t) => {

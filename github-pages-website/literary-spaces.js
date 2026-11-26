@@ -1,4 +1,4 @@
-import {createSpace} from './space-kit.js?build=fluid-book-72';
+import {createSpace} from './space-kit.js?build=tree-guide-74';
 export async function startSpace(key){
   const settings={
     palace:{title:'玄溟 · 鲛宫',legend:'碧玉为叶 · 赤瑙为花',background:'#dfe6db',fogNear:30,fogFar:104},
@@ -7,9 +7,9 @@ export async function startSpace(key){
   };
   const kit=createSpace(key,settings[key]);
   try{
-    const module=key==='palace'?await import('./palace-scene.js?build=fluid-book-72')
-      :key==='study'?await import('./study-scene.js?build=fluid-book-72')
-        :await import('./ending-scene.js?build=fluid-book-72');
+    const module=key==='palace'?await import('./palace-scene.js?build=tree-guide-74')
+      :key==='study'?await import('./study-scene.js?build=tree-guide-74')
+        :await import('./ending-scene.js?build=tree-guide-74');
     module.buildSpace(kit);kit.start();
   }catch(error){console.error(error);kit.announce('书页尚未展开，请刷新重试。',60);kit.start();}
 }

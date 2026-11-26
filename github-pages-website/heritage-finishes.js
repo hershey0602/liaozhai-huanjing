@@ -1,4 +1,4 @@
-import {THREE,seeded,mat,group,mesh,box,curve} from './space-kit.js?build=fluid-book-72';
+import {THREE,seeded,mat,group,mesh,box,curve} from './space-kit.js?build=tree-guide-74';
 
 function canvasMap(draw,size=1024,color=true){const c=document.createElement('canvas');c.width=c.height=size;draw(c.getContext('2d'),size);const t=new THREE.CanvasTexture(c);if(color)t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;}
 export function historicSurfaces(){
