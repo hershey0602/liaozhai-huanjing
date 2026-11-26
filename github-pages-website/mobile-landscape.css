@@ -4,20 +4,13 @@ body.mobile-visitor .topbar{top:57px;left:16px;right:16px}
 body.prologue-active .landscape-toggle{background:#221c16dd;color:#e6d0aa;border-color:#ac93676b}
 .landscape-notice{position:fixed;z-index:55;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:85vw;padding:12px 18px;background:#30291eed;color:#f4e8d0;border:1px solid #b89b6477;border-radius:12px;font:14px/1.6 KaiTi,STKaiti,serif;text-align:center;pointer-events:none}
 .landscape-notice[hidden]{display:none}
-.landscape-guide{position:fixed;z-index:100;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 25%,#fff9e8,#ecdfc5);padding:24px;box-sizing:border-box}
-.landscape-card{text-align:center;width:min(390px,100%);color:#5f5039}
-.landscape-card small{display:block;letter-spacing:.23em;color:#9a835c;font-size:12px;margin:24px 0 18px}
-.landscape-card h1{font-size:27px;font-weight:400;letter-spacing:.08em;line-height:1.6;margin:0 0 14px}
-.landscape-card p{font-size:14px;line-height:1.9;color:#958166;margin-bottom:30px}
-.landscape-card button{display:block;margin:12px auto;width:min(260px,100%);padding:14px 18px;font:17px KaiTi,STKaiti,serif;letter-spacing:.14em;border-radius:25px;cursor:pointer}
-.landscape-enter{background:#365b51;color:#f6edda;border:1px solid #365b51;box-shadow:0 6px 20px #365b5126}
-.landscape-portrait{background:transparent;border:1px solid #b9a88888;color:#897354}
-.landscape-card em{display:block;font-size:12px;font-style:normal;line-height:1.9;color:#a28d6c;margin-top:26px}
-.turn-phone{width:100px;height:90px;margin:0 auto;position:relative;font:53px/90px serif;color:#a38a5d}
-.turn-phone span{position:absolute;width:31px;height:56px;left:10px;top:16px;border:2px solid #57766b;border-radius:6px;transform:rotate(-30deg)}
-.turn-phone span:after{content:'';position:absolute;bottom:4px;left:12px;width:6px;height:2px;border-radius:2px;background:#57766b}
-.turn-phone{padding-left:30px;box-sizing:border-box}
 body.mobile-visitor .letter-paper{box-sizing:border-box;max-height:calc(100dvh - 24px);overflow-y:auto}
+body.mobile-visitor .chapter-nav{scrollbar-width:none}
+body.mobile-visitor .chapter-nav::-webkit-scrollbar{display:none}
+@media(orientation:portrait){
+  body.mobile-visitor .chapter-nav{top:112px;left:14px;right:14px;max-width:calc(100vw - 28px);overflow-x:auto}
+  body.mobile-visitor .legend{top:164px;right:13px;font-size:12px}
+}
 @media(orientation:landscape) and (max-height:600px){
   body.mobile-visitor .chapter-nav{top:max(8px,env(safe-area-inset-top));left:auto;right:max(10px,env(safe-area-inset-right));max-width:calc(100vw - 128px);padding:3px;gap:1px;overflow-x:auto}
   body.mobile-visitor .chapter-nav a{font-size:11px;padding:6px 8px;letter-spacing:0}

@@ -1,9 +1,11 @@
 import * as THREE from 'three';
-import { createPrologue } from './prologue.js?build=mobile-landscape-69';
+import {dragView} from './view-drag.js?build=fluid-book-72';
+import {opening,yieldToOpening} from './opening.js?build=fluid-book-72';
+import { createPrologue } from './prologue.js?build=fluid-book-72';
 import { createYingningCharacter } from './yingning-fox.js?build=geometric-fox-56';
-import { createYingningStory } from './yingning-story.js?build=mobile-landscape-69';
+import { createYingningStory } from './yingning-story.js?build=fluid-book-72';
 import { createWatercolorLandscape, addWatercolorShrubs, addPaintedHorizons,
-  addPaintedStream, addPaintedPath } from './watercolor-landscape.js?build=warm-ink-57';
+  addPaintedStream, addPaintedPath } from './watercolor-landscape.js?build=fluid-book-72';
 
 const revision = new URLSearchParams(location.search).get('rev') ?? 'source-verse-2';
 const prototypeInk = revision === 'layered-ink-prototype';
@@ -44,11 +46,12 @@ const hillsideSun = new THREE.DirectionalLight('#fff3df', 0.48);
 hillsideSun.position.set(-17, 24, 13);
 scene.add(hillsideSun);
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.05, 155);
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+const renderer = opening?.renderer ?? new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, document.body.classList.contains('mobile-visitor') ? 1.25 : 1.6));
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-stage.appendChild(renderer.domElement);
+if(!opening)stage.appendChild(renderer.domElement);
+await yieldToOpening();
 
 let seed = 63019;
 function random() { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; }
@@ -263,6 +266,7 @@ if (expandedInk) {
     vertexColors: true, side: THREE.DoubleSide,
   })));
 }
+await yieldToOpening();
 const watercolorGround = new THREE.Mesh(landGeometry, new THREE.MeshBasicMaterial({
   vertexColors: !expandedInk,
   map: expandedInk ? createWatercolorLandscape({ pathX, riverX,
@@ -308,6 +312,7 @@ if (!layeredInk) {
 }
 
 // Retain the earlier point-column mountain only in the comparison version.
+await yieldToOpening();
 function siteNoise(a, b, salt) {
   const value = Math.sin(a * 127.1 + b * 311.7 + salt * 74.7) * 43758.5453;
   return value - Math.floor(value);
@@ -677,10 +682,10 @@ function addDistantInkRidge(ridge) {
   scene.add(new THREE.Mesh(geometry, material));
 }
 if (expandedInk) {
-  for (const ridge of [ridges[0], ridges[2], ridges[4], ridges[6]]) addDistantInkRidge(ridge);
+  for (const ridge of [ridges[0], ridges[2], ridges[4], ridges[6]]) {addDistantInkRidge(ridge);await yieldToOpening();}
 }
 
-function addTree(cx, cz, height, radius, blossoms = false, species = 'peach') {
+async function addTree(cx, cz, height, radius, blossoms = false, species = 'peach') {
   const base = ground(cx, cz) - (expandedInk ? 0.20 : 0);
   const bark = blossoms ? ['#554d45', '#62584c', '#716356'] : ['#625d50', '#766b58', '#877761'];
   const barkPhrase = expandedInk ? '丛花乱树中花木四合其所' : '树木葱茏枝叶扶疏';
@@ -713,6 +718,7 @@ function addTree(cx, cz, height, radius, blossoms = false, species = 'peach') {
   });
   // Overlapping glyph rings make a continuous tapered trunk, without punctuation gaps.
   for (let i = 0; i <= Math.ceil(height * 0.79 / 0.03); i++) {
+    if(i%32===0)await yieldToOpening();
     const t = Math.min(0.79, i * 0.03 / height);
     const center = trunkAt(t);
     const taper = (blossoms ? 0.33 : 0.26) * Math.pow(1 - t, 1.28) + 0.048;
@@ -840,6 +846,7 @@ function addTree(cx, cz, height, radius, blossoms = false, species = 'peach') {
     }
   }
   for (let b = 0; b < branchCount; b++) {
+    await yieldToOpening();
     const launch = 0.28 + (b / branchCount) * 0.40;
     const p = trunkAt(launch);
     growBranch(new THREE.Vector3(p.x, p.y, p.z), b * 2.39996 + between(-0.22, 0.22),
@@ -856,6 +863,7 @@ function addTree(cx, cz, height, radius, blossoms = false, species = 'peach') {
   const crownCount = expandedInk ? (species === 'plum' ? 3800 : blossoms ? 5700 : 3100)
     : (blossoms ? 10000 : 5000);
   for (let n = 0; n < crownCount; n++) {
+    if(n%384===0)await yieldToOpening();
     const azimuth = random() * Math.PI * 2;
     const elevation = between(-1, 1);
     const radial = n % 3 === 0 ? Math.pow(random(), 0.19) : Math.cbrt(random());
@@ -899,7 +907,7 @@ function summitScore(x, z) {
 }
 const treeSites = [];
 const blossomSites = [];
-function addTreeOnSlope(x, z, height, radius, blossoms = false, species = 'peach') {
+async function addTreeOnSlope(x, z, height, radius, blossoms = false, species = 'peach') {
   let siteX = x, siteZ = z;
   if (summitScore(x, z) > 0.62) {
     let best = Infinity;
@@ -932,7 +940,7 @@ function addTreeOnSlope(x, z, height, radius, blossoms = false, species = 'peach
   if (summitScore(siteX, siteZ) > 0.62) return;
   treeSites.push([siteX, siteZ]);
   if (blossoms) blossomSites.push([siteX, siteZ, radius]);
-  addTree(siteX, siteZ, height, radius, blossoms, species);
+  await addTree(siteX, siteZ, height, radius, blossoms, species);
 }
 
 const trees = [
@@ -944,34 +952,39 @@ const trees = [
   [30, 31, 5.5, 3.0], [-31, 32, 5.6, 3.0], [-30, -32, 5.8, 3.0],
 ];
 if (!layeredInk) {
-  for (const [x, z, h, r] of trees) addTreeOnSlope(x, z, h, r);
-  addTreeOnSlope(8.3, -6.2, 8.2, 6.6, true);
+  for (const [x, z, h, r] of trees) await addTreeOnSlope(x, z, h, r);
+  await addTreeOnSlope(8.3, -6.2, 8.2, 6.6, true);
   // A close blossom canopy frames the path like the branch in the illustration.
-  addTreeOnSlope(8.5, 12.0, 7.6, 6.2, true);
-  addTreeOnSlope(-11.2, 5.7, 5.3, 3.8, true);
-  addTreeOnSlope(-10.2, -23, 5.0, 3.2, true);
-  addTreeOnSlope(10.8, 29.5, 6.3, 4.5, true);
-  addTreeOnSlope(-23.4, 23.4, 5.4, 3.3, true);
+  await addTreeOnSlope(8.5, 12.0, 7.6, 6.2, true);
+  await addTreeOnSlope(-11.2, 5.7, 5.3, 3.8, true);
+  await addTreeOnSlope(-10.2, -23, 5.0, 3.2, true);
+  await addTreeOnSlope(10.8, 29.5, 6.3, 4.5, true);
+  await addTreeOnSlope(-23.4, 23.4, 5.4, 3.3, true);
   // Each wooded knoll hides the next turn until the visitor walks around it.
   for (const fold of scenicFolds) {
-    addTreeOnSlope(fold.x, fold.z, 5.5 + random() * 0.8, 3.7 + random() * 0.5, fold.z === 5);
-    addTreeOnSlope(fold.x + fold.side * 2.75, fold.z - 2.3, 4.3 + random() * 0.7, 2.7, false);
+    await addTreeOnSlope(fold.x, fold.z, 5.5 + random() * 0.8, 3.7 + random() * 0.5, fold.z === 5);
+    await addTreeOnSlope(fold.x + fold.side * 2.75, fold.z - 2.3, 4.3 + random() * 0.7, 2.7, false);
   }
-  addTreeOnSlope(pathX(34) - 5.2, 33, 5.0, 3.2, false);
-  addTreeOnSlope(riverX(33) + 4.8, 32, 5.7, 3.4, true);
-  addTreeOnSlope(pathX(28) + 5.3, 28, 5.1, 3.2, false);
+  await addTreeOnSlope(pathX(34) - 5.2, 33, 5.0, 3.2, false);
+  await addTreeOnSlope(riverX(33) + 4.8, 32, 5.7, 3.4, true);
+  await addTreeOnSlope(pathX(28) + 5.3, 28, 5.1, 3.2, false);
 } else if (expandedInk) {
-  addTreeOnSlope(pathX(34) - 6.5, 32, 5.4, 3.2);
-  addTreeOnSlope(pathX(21) + 6.9, 21, 4.7, 2.9);
-  addTreeOnSlope(pathX(24) - 5.3, 24, 4.4, 2.8, true, 'plum');
-  addTreeOnSlope(-12.0, 7.5, 5.7, 3.8, true);
-  addTreeOnSlope(9.2, -6.4, 7.1, 5.0, true);
-  addTreeOnSlope(-14.2, -24.0, 4.7, 3.0, true, 'plum');
-  addTreeOnSlope(5.7, -21.0, 4.3, 2.4, true, 'plum');
-  addTreeOnSlope(9.0, -41.5, 4.2, 2.6, true, 'plum');
-  addTreeOnSlope(-17.2, -15, 5.1, 3.0);
-  addTreeOnSlope(15.8, -22, 5.6, 3.2);
-  addTreeOnSlope(11.6, 16.6, 5.4, 3.4, true);
+  await addTreeOnSlope(pathX(34) - 6.5, 32, 5.4, 3.2);
+  await yieldToOpening();
+  await addTreeOnSlope(pathX(21) + 6.9, 21, 4.7, 2.9);
+  await addTreeOnSlope(pathX(24) - 5.3, 24, 4.4, 2.8, true, 'plum');
+  await yieldToOpening();
+  await addTreeOnSlope(-12.0, 7.5, 5.7, 3.8, true);
+  await addTreeOnSlope(9.2, -6.4, 7.1, 5.0, true);
+  await yieldToOpening();
+  await addTreeOnSlope(-14.2, -24.0, 4.7, 3.0, true, 'plum');
+  await addTreeOnSlope(5.7, -21.0, 4.3, 2.4, true, 'plum');
+  await addTreeOnSlope(9.0, -41.5, 4.2, 2.6, true, 'plum');
+  await yieldToOpening();
+  await addTreeOnSlope(-17.2, -15, 5.1, 3.0);
+  await addTreeOnSlope(15.8, -22, 5.6, 3.2);
+  await addTreeOnSlope(11.6, 16.6, 5.4, 3.4, true);
+  await yieldToOpening();
 }
 
 // Sparse far-bank bamboo keeps the centre open, as in the document's concept image.
@@ -1055,6 +1068,7 @@ if (!layeredInk) {
 
 // The source-text route moves from a hidden hamlet to a north-facing cottage,
 // then turns west through a second gate into the flower-filled rear garden.
+await yieldToOpening();
 if (expandedInk) {
   const wallCanvas = document.createElement('canvas');
   wallCanvas.width = wallCanvas.height = 512;
@@ -1391,7 +1405,8 @@ if (expandedInk) {
   ];
   for (const [x, z, h, radius, kind] of orchard) {
     blossomSites.push([x, z, radius]);
-    addTree(x, z, h, radius, true, kind);
+    await addTree(x, z, h, radius, true, kind);
+    await yieldToOpening();
   }
   beanArbor(-15.0, -31.8);
   for (const [cx, cz, spread] of [
@@ -1627,6 +1642,7 @@ const materials = [];
 const waterObjects = [];
 const pathObjects = [];
 for (const bucket of buckets.values()) {
+  if(materials.length%8===0)await yieldToOpening();
   if (expandedInk && (bucket.motion === 'river' || bucket.motion === 'path')) continue;
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(bucket.positions, 3));
@@ -1701,18 +1717,19 @@ function walkingFloor(x, z) {
 camera.position.set(startX, walkingFloor(startX, startZ) + 1.73, startZ);
 let arrivalUnlockAt = 0;
 const prologueEnabled = expandedInk && !sceneView && new URLSearchParams(location.search).get('intro') !== '0';
-const prologue = prologueEnabled ? createPrologue(renderer, () => {
+function enterValley(){
   document.body.classList.remove('prologue-active', 'prologue-revealed');
   for(const link of document.querySelectorAll('.chapter-nav a')){
     if(link.getAttribute('href').includes('space=nanshan'))link.setAttribute('aria-current','page');
     else link.removeAttribute('aria-current');
   }
   document.body.classList.add('arrival', 'arrival-observe');
-  arrivalUnlockAt = performance.now() + 3450;
+  arrivalUnlockAt = performance.now() + 450;
   requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add('arrival-clearing')));
-  setTimeout(() => document.body.classList.remove('arrival', 'arrival-clearing'), 1650);
-  setTimeout(() => document.body.classList.remove('arrival-observe'), 3450);
-}) : null;
+  setTimeout(() => document.body.classList.remove('arrival', 'arrival-clearing'), 650);
+  setTimeout(() => document.body.classList.remove('arrival-observe'), 450);
+}
+const prologue = opening?.prologue ?? (prologueEnabled ? createPrologue(renderer, enterValley) : null);
 if (!prologueEnabled) document.body.classList.remove('prologue-active');
 
 // The first encounter is deliberately partial: a laugh among the letters,
@@ -2091,8 +2108,7 @@ renderer.domElement.addEventListener('pointermove', event => {
   if (prologue?.active) { prologue.pointerMove(event); return; }
   if (performance.now() < arrivalUnlockAt) return;
   if (!dragging) return;
-  yaw += (event.clientX - lastX) * 0.0044;
-  pitch = THREE.MathUtils.clamp(pitch + (event.clientY - lastY) * 0.0031, -0.46, 0.52);
+  ({yaw,pitch}=dragView(yaw,pitch,event.clientX-lastX,event.clientY-lastY,{speedX:.0044,speedY:.0031,min:-.46,max:.52}));
   lastX = event.clientX; lastY = event.clientY;
   updateCamera();
 });
@@ -2244,4 +2260,16 @@ function animate() {
   petalMesh.instanceMatrix.needsUpdate = true;
   renderer.render(scene, camera);
 }
+if(opening){
+  // Upload full-resolution textures before the handoff rather than on its first frame.
+  const textures=new Set();scene.traverse(o=>{for(const material of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){
+    for(const value of Object.values(material))if(value?.isTexture)textures.add(value);
+    for(const uniform of Object.values(material.uniforms??{}))if(uniform.value?.isTexture)textures.add(uniform.value);
+  }});
+  for(const texture of textures){renderer.initTexture(texture);await yieldToOpening();}
+  if(renderer.compileAsync)try{await renderer.compileAsync(scene,camera);}catch(error){console.warn('预编译回退至正常绘制',error);}
+}
+opening?.attach(enterValley);
+performance.mark('liaozhai-valley-ready');
 animate();
+document.getElementById('startup-loading')?.remove();

@@ -1,8 +1,8 @@
-import {THREE,seeded,paperTexture,mat,group,mesh,box,cylinder,sphere,curve,plaque,glow,calligraphy,makeInkFigure} from './space-kit.js?build=mobile-landscape-69';
-import {finishStudy} from './scene-finishes.js?build=mobile-landscape-69';
-import {paperBook} from './crafted-objects.js?build=mobile-landscape-69';
-import {makeCongeeStove} from './kitchen-stove.js?build=mobile-landscape-69';
-import {livingFlame} from './living-flame.js?build=mobile-landscape-69';
+import {THREE,seeded,paperTexture,mat,group,mesh,box,cylinder,sphere,curve,plaque,glow,calligraphy,makeInkFigure} from './space-kit.js?build=fluid-book-72';
+import {finishStudy} from './scene-finishes.js?build=fluid-book-72';
+import {paperBook} from './crafted-objects.js?build=fluid-book-72';
+import {makeCongeeStove} from './kitchen-stove.js?build=fluid-book-72';
+import {livingFlame} from './living-flame.js?build=fluid-book-72';
 
 export function makeStudyRoom(k,{finale=false}={}){
   const {world}=k,rnd=seeded(2821);

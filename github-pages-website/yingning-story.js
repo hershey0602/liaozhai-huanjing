@@ -9,7 +9,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
   const next = document.getElementById('story-next');
   const progress = document.getElementById('story-progress');
   const ending = document.getElementById('story-ending');
-  document.getElementById('story-replay').addEventListener('click',()=>{ location.href=location.pathname+'?space=prologue&v=mobile-landscape-69'; });
+  document.getElementById('story-replay').addEventListener('click',()=>{ location.href=location.pathname+'?space=prologue&v=fluid-book-72'; });
   const marker = document.getElementById('story-marker');
   const hint = document.querySelector('.hint');
   const worldPoint = new THREE.Vector3();
@@ -74,7 +74,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
     ending.querySelector('button').hidden=true;
     const shortcut=ending.querySelector('.next-space');if(shortcut)shortcut.hidden=true;
     ending.classList.add('visible');
-    setTimeout(()=>{location.href='?space=palace&v=mobile-landscape-69';},2600);
+    setTimeout(()=>{location.href='?space=palace&v=fluid-book-72';},2600);
   }
   function show(lines, done) {
     state.lines=lines;state.index=0;state.done=done;state.active=true;

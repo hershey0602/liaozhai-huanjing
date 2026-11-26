@@ -1,7 +1,7 @@
-import {THREE,seeded,mat,group,mesh,box,cylinder,calligraphy,makeInkFigure} from './space-kit.js?build=mobile-landscape-69';
-import {heritageRoom} from './heritage-room.js?build=mobile-landscape-69';
+import {THREE,seeded,mat,group,mesh,box,cylinder,calligraphy,makeInkFigure} from './space-kit.js?build=fluid-book-72';
+import {heritageRoom} from './heritage-room.js?build=fluid-book-72';
 
-import {flexibleLeaf,endingPaperMaterial,turnProgress} from './ending-paper.js?build=mobile-landscape-69';
+import {flexibleLeaf,endingPaperMaterial,turnProgress} from './ending-paper.js?build=fluid-book-72';
 
 const comments=[
   ['异史氏曰 · 婴宁','观其孜孜憨笑，似全无心肝者；而墙下恶作剧，其黠孰甚焉。至凄恋鬼母，反笑为哭，我婴宁殆隐于笑者矣。'],
@@ -21,7 +21,7 @@ export function buildSpace(k){
   const finish={root:room.portraitFrame,portraitKey:room.portraitKey,halo:room.halo};
   finish.root.traverse(o=>{if(o.isMesh){const m=o.material;if(!roomMaterials.has(m)){roomMaterials.set(m,m.opacity);m.transparent=true;m.needsUpdate=true;}}});
   const windowFigure=makeInkFigure(world,4.9,.1,-.4,{color:'#695c45',opacity:0});windowFigure.rotation.set(0,-.65,.12);
-  const book=group(world,0,1.65,-.5);book.visible=false;book.rotation.x=-.16;
+  const book=group(world,0,1.65,-.5);book.name='ending-reading-book';book.visible=false;book.rotation.x=-.16;
   const cloth=mat('#9b8057'),pageEdge=mat('#c8b48b');box(book,1.7,2.2,.12,cloth,0,0,-.10);box(book,1.58,2.09,.15,pageEdge,0,0,0);
   const pc=document.createElement('canvas');pc.width=512;pc.height=704;const px=pc.getContext('2d');
   const pageTexture=new THREE.CanvasTexture(pc);pageTexture.colorSpace=THREE.SRGBColorSpace;
@@ -46,7 +46,7 @@ export function buildSpace(k){
   const bookMaterials=new Set();book.traverse(o=>{if(o.isMesh)bookMaterials.add(o.material);});
   function revealBook(opacity){for(const m of bookMaterials){m.transparent=true;if(m.uniforms?.uOpacity)m.uniforms.uOpacity.value=opacity;else m.opacity=opacity;}}
   const verse=document.createElement('div');verse.className='ending-verse';verse.setAttribute('aria-live','polite');verse.innerHTML='<small></small><p></p>';document.body.append(verse);
-  const actions=document.createElement('div');actions.className='ending-actions';actions.hidden=true;actions.innerHTML='<a href="?space=prologue&v=mobile-landscape-69">再启书卷</a><a href="?space=nanshan&intro=0&v=mobile-landscape-69">重游三境</a>';document.body.append(actions);
+  const actions=document.createElement('div');actions.className='ending-actions';actions.hidden=true;actions.innerHTML='<a href="?space=prologue&v=fluid-book-72">再启书卷</a><a href="?space=nanshan&intro=0&v=fluid-book-72">重游三境</a>';document.body.append(actions);
   const textCache=new Map(),motes=[];const words=[...comments.map(a=>a[1]).join('')];
   for(let i=0;i<125;i++){const c=words[i%words.length];if(!textCache.has(c))textCache.set(c,calligraphy(c,{width:128,height:128,size:88,vertical:false,color:'#fff'}));
     const s=new THREE.Sprite(new THREE.SpriteMaterial({map:textCache.get(c),color:'#ceb58a',transparent:true,opacity:0,depthWrite:false}));s.scale.setScalar(.12+rnd()*.09);const origin=new THREE.Vector3((rnd()-.5)*17,.2+rnd()*5,-12+rnd()*22);s.position.copy(origin);world.add(s);motes.push({s,origin,delay:rnd()*.5});}
@@ -66,6 +66,7 @@ export function buildSpace(k){
     const age=t-at;
     if(phase===0){portraitMaterial.opacity=THREE.MathUtils.smoothstep(age,0,1);if(age>=endingTiming.portrait){nextPhase();return;}}
     if(phase===1){portraitMaterial.opacity=1-THREE.MathUtils.smoothstep(age,0,endingTiming.window);windowFigure.material.opacity=.25*THREE.MathUtils.smoothstep(age,0,endingTiming.window);k.ambient.intensity=.30-.15*Math.min(1,age/endingTiming.window);k.sun.intensity=0;if(age>=endingTiming.window){nextPhase();return;}}
+    book.position.x=k.camera.aspect<1&&document.body.classList.contains('mobile-visitor')&&(phase===2||phase===3)?.78:0;
     if(phase===2){const index=Math.min(2,Math.floor(age/endingTiming.comment)),local=age-index*endingTiming.comment;if(index!==quote){quote=index;rememberPage();verse.querySelector('small').textContent=comments[index][0]+' · 节选';verse.querySelector('p').textContent=excerpts[index];writePage(comments[index][1]);}
       verse.classList.toggle('visible',local<3.7);const turn=turnProgress(local);
       leaf.visible=index>0&&turn<1;leaf.userData.bend(turn);leftPage.visible=true;leftStack.visible=true;leftStack.rotation.y=0;
@@ -75,7 +76,7 @@ export function buildSpace(k){
       motes.forEach(({s,origin,delay},i)=>{const p=THREE.MathUtils.clamp((fade-delay)/(1-delay),0,1);s.position.lerpVectors(origin,new THREE.Vector3(0,1.6,-.5),p);s.position.x+=Math.sin(t*.5+i)*.16*(1-p);s.material.opacity=Math.sin(p*Math.PI)*.45;});
       if(age>=endingTiming.comment*3){nextPhase();return;}
     }
-    if(phase===3){const close=THREE.MathUtils.smootherstep(age,0,1.15);coverHinge.rotation.y=-Math.PI*(1-close);leftStack.rotation.y=Math.PI*close;leaf.visible=false;leftStack.visible=close<.98;pages.visible=close<.98;revealBook(1);book.scale.setScalar(1);book.position.y=1.15;for(const {s} of motes)s.material.opacity*=.85;if(age>=endingTiming.closing)nextPhase();}
+    if(phase===3){const close=THREE.MathUtils.smootherstep(age,0,1.15);book.position.x*=1-close;coverHinge.rotation.y=-Math.PI*(1-close);leftStack.rotation.y=Math.PI*close;leaf.visible=false;leftStack.visible=close<.98;pages.visible=close<.98;revealBook(1);book.scale.setScalar(1);book.position.y=1.15;for(const {s} of motes)s.material.opacity*=.85;if(age>=endingTiming.closing)nextPhase();}
     if(phase>=4){coverHinge.rotation.y=0;leaf.visible=false;leftStack.visible=false;pages.visible=false;book.position.y=1.15;}
   });
 }

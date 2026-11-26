@@ -1,9 +1,9 @@
-import {THREE,seeded,paperTexture,mat,group,mesh,box,cylinder,sphere,curve,plaque,roof,railing,glow,lantern,calligraphy} from './space-kit.js?build=mobile-landscape-69';
-import {createLetterWriting} from './letter-writing.js?build=mobile-landscape-69';
-import {finishPalace} from './scene-finishes.js?build=mobile-landscape-69';
-import {livingSea,dragonThrone} from './crafted-objects.js?build=mobile-landscape-69';
-import {verseJadeTree} from './verse-jade-tree.js?build=mobile-landscape-69';
-import {danceDais} from './royal-fittings.js?build=mobile-landscape-69';
+import {THREE,seeded,paperTexture,mat,group,mesh,box,cylinder,sphere,curve,plaque,roof,railing,glow,lantern,calligraphy} from './space-kit.js?build=fluid-book-72';
+import {createLetterWriting} from './letter-writing.js?build=fluid-book-72';
+import {finishPalace} from './scene-finishes.js?build=fluid-book-72';
+import {livingSea,dragonThrone} from './crafted-objects.js?build=fluid-book-72';
+import {verseJadeTree} from './verse-jade-tree.js?build=fluid-book-72';
+import {danceDais} from './royal-fittings.js?build=fluid-book-72';
 
 const seaVerse='宫中有玉树一株围可合抱本莹澈如白琉璃中有心淡黄色叶类碧玉细碎有浓阴花开满树每一瓣落锵然作响仙尘路隔不能相依两地同心何必旦夕相守海水复合不可复见';
 export function buildSpace(k){
@@ -106,7 +106,7 @@ export function buildSpace(k){
   for(let i=0;i<9;i++){const x=(i-4)*4.4,h=2.6+(i%3)*1.4,z=8-(i%2)*3;box(city,2.8,h,2.2,mirageMat,x,h/2,z);const rt=group(city,x,0,z);roof(rt,3.7,3,h,.8,mirageMat,mirageMat);}
   const curtain=mesh(world,new THREE.PlaneGeometry(48,16),new THREE.MeshBasicMaterial({color:'#e1ece2',transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}),0,5,7);
   const voyageStart=k.time;let arrived=false;
-  function arrive(){if(arrived)return;arrived=true;k.locked=false;k.skip.hidden=true;city.visible=false;boat.position.set(0,.2,26.5);k.setView(0,24,0,.04);k.announce('青白玉阶尽处，鳞书阁的第三层微微发亮。',7,'玄溟 · 鲛宫');}
+  function arrive(){if(arrived)return;arrived=true;k.locked=false;k.skip.hidden=true;city.visible=false;boat.visible=false;boat.position.set(0,.2,26.5);k.setView(0,24,0,.04);k.announce('青白玉阶尽处，鳞书阁的第三层微微发亮。',7,'玄溟 · 鲛宫');}
   k.locked=true;k.skip.hidden=false;k.skip.textContent='略过舟行';k.skip.onclick=arrive;k.announce('海水分开，文字沉入碧波。',7,'登船 · 入海');
   updates.push(t=>{
     if(!departed&&t>=departAt){departed=true;k.go('study');}
