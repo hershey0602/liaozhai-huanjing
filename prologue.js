@@ -1,4 +1,7 @@
+import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
 import * as THREE from 'three';
+import {followPage,pageCurl} from './book-motion.js?build=wechat-landscape-75';
+import {letterFlight} from './letter-flight.js?build=wechat-landscape-75';
 
 const clamp = THREE.MathUtils.clamp;
 const smooth = (a, b, t) => {
@@ -183,7 +186,7 @@ export function createPrologue(renderer, onEnter) {
   const rim = new THREE.DirectionalLight('#b1c6c2', 1.3);
   rim.position.set(4, -1, -3);
   world.add(rim);
-  const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.1, 80);
+  const camera = new THREE.PerspectiveCamera(36, viewSize().width / viewSize().height, 0.1, 80);
   camera.position.set(0, 0, 8.4);
 
   const book = new THREE.Group();
@@ -254,17 +257,12 @@ export function createPrologue(renderer, onEnter) {
 
   const pageVerse = [...'窃闻山中有草名笑矣乎嗅之则笑不可止房中植此一种则合欢忘忧并无颜色矣若解语花正嫌其作态耳'];
   const quote = Array.from({ length: pageVerse.length * 4 }, (_, i) => pageVerse[i % pageVerse.length]);
-  const textures = new Map();
+  const flightBatch=letterFlight(world,quote,makeGlyphTexture);
   const flyingLetters = quote.map((char, i) => {
-    if (!textures.has(char)) textures.set(char, makeGlyphTexture(char));
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({
-      map: textures.get(char), color: '#bda782', transparent: true, opacity: 0,
-      depthWrite: false,
-    }));
+    const sprite = flightBatch.letters[i];
     const pageIndex = i % pageVerse.length;
     sprite.position.set(0.78 - Math.floor(pageIndex / 11) * 0.31, 1.04 - (pageIndex % 11) * 0.215, 0.48);
     sprite.scale.set(0.17, 0.17, 1);
-    world.add(sprite);
     return sprite;
   });
   const ink = new THREE.Mesh(new THREE.PlaneGeometry(0.58, 0.58), new THREE.MeshBasicMaterial({
@@ -277,6 +275,8 @@ export function createPrologue(renderer, onEnter) {
   const introStart = performance.now() / 1000;
   let stateAt = introStart;
   let progress = 0;
+  let targetProgress=0,lastUpdate=introStart;
+  let lastBentProgress=-1;
   let dragging = false;
   let dragX = 0;
   let dragProgress = 0;
@@ -286,9 +286,9 @@ export function createPrologue(renderer, onEnter) {
     state = next;
     stateAt = now;
   }
-  function pointerDown(event) {
+  function pointerDown(event) { event=viewPointer(event);
     if (state !== 'closed' && state !== 'opening') return false;
-    const x = event.clientX / innerWidth, y = event.clientY / innerHeight;
+    const x = event.clientX / viewSize().width, y = event.clientY / viewSize().height;
     if (x < 0.25 || x > 0.78 || y < 0.08 || y > 0.91) return false;
     dragging = true;
     dragX = event.clientX;
@@ -297,25 +297,24 @@ export function createPrologue(renderer, onEnter) {
     renderer.domElement.setPointerCapture(event.pointerId);
     return true;
   }
-  function pointerMove(event) {
+  function pointerMove(event) { event=viewPointer(event);
     if (!dragging) return;
-    progress = clamp(dragProgress + (dragX - event.clientX) / Math.min(innerWidth * 0.32, 430), 0, 1);
+    targetProgress = clamp(dragProgress + (dragX - event.clientX) / Math.min(viewSize().width * 0.32, 430), 0, 1);
   }
   function pointerUp() {
     if (!dragging) return;
     dragging = false;
-    if (progress >= 0.92) {
-      progress = 1;
-      setState('observing', performance.now() / 1000);
-      uiTitle.textContent = '书页已启 · 请凝望墨迹';
-      uiSub.textContent = '文字将从纸上生长为山谷';
-    } else if (progress < 0.08) {
-      progress = 0;
-      setState('closed', performance.now() / 1000);
-    }
+    targetProgress=targetProgress>=.16?1:0;
+    setState('settling',performance.now()/1000);
   }
   function update(time) {
-    const elapsed = time - stateAt;
+    let elapsed = time - stateAt;
+    const dt=Math.max(0,time-lastUpdate);lastUpdate=time;
+    if(state==='opening'||state==='settling')progress=followPage(progress,targetProgress,dt);
+    if(state==='settling'&&Math.abs(progress-targetProgress)<.002){
+      progress=targetProgress;setState(progress===1?'observing':'closed',time);elapsed=0;
+      if(progress===1){uiTitle.textContent='书页已启 · 请凝望墨迹';uiSub.textContent='文字将从纸上生长为山谷';}
+    }
     if (state === 'closed') {
       book.scale.setScalar(smooth(0.8, 2.15, elapsed));
       if (elapsed > 0.8) document.body.classList.add('prologue-revealed');
@@ -327,8 +326,14 @@ export function createPrologue(renderer, onEnter) {
       if (child.userData.isPage) {
         const i = child.userData.index;
         child.rotation.y = -Math.PI * clamp((progress - 0.10 - i * 0.08) / (0.72 + i * 0.06), 0, 1) * (0.99 - i * 0.035);
+        if(progress!==lastBentProgress){
+          const page=child.children[0],positions=page.geometry.attributes.position;
+          for(let j=0;j<positions.count;j++){const u=positions.getX(j)/2.28;positions.setZ(j,pageCurl(u,progress)*(1-.15*i));}
+          positions.needsUpdate=true;page.geometry.computeVertexNormals();
+        }
       }
     }
+    lastBentProgress=progress;
     book.position.x = progress * 0.75;
     for (let i = 0; i < dustCount; i++) {
       dustPositions[i * 3] = dustOrigins[i * 3] + Math.sin(time * 0.21 + i * 1.19) * 0.13;
@@ -345,14 +350,15 @@ export function createPrologue(renderer, onEnter) {
     if (state === 'observing') {
       ink.material.opacity = 0.55 + 0.08 * Math.sin(elapsed * 2.3);
       ink.scale.setScalar(3.8 + elapsed * 0.42);
-      if (elapsed >= 2) {
+      if (elapsed >= .7) {
         setState('flight', time);
+        elapsed=0;
         uiTitle.textContent = '字离书页 · 化作花径';
         uiSub.textContent = '沿文字长河，进入南山';
       }
     }
     if (state === 'flight') {
-      const flight = clamp(elapsed / 4.2, 0, 1);
+      const flight = clamp(elapsed / 2.8, 0, 1);
       const worldTone = new THREE.Color('#030405');
       worldTone.lerp(new THREE.Color('#33291f'), smooth(0.64, 0.83, flight));
       worldTone.lerp(new THREE.Color('#f0e6d3'), smooth(0.82, 1, flight));
@@ -364,7 +370,7 @@ export function createPrologue(renderer, onEnter) {
         if (child.userData.isPage) child.rotation.y *= 1 - smooth(0.10, 0.72, flight);
       }
       camera.position.z = 8.4 - 2.45 * smooth(0.20, 1, flight);
-      ink.material.opacity *= 1 - smooth(0.15, 0.65, flight);
+      ink.material.opacity = .55 * (1 - smooth(0.15, 0.65, flight));
       for (let i = 0; i < flyingLetters.length; i++) {
         const letter = flyingLetters[i];
         // Successive pages of verse settle into a continuous, winding flower path.
@@ -388,17 +394,20 @@ export function createPrologue(renderer, onEnter) {
         letter.material.opacity = smooth(delay, delay + 0.19, flight) * (1 - smooth(0.95, 1, flight));
       }
       if (flight >= 1 && !viewEntered) {
-        viewEntered = true;
-        onEnter();
-        setState('entered', time);
+        if(onEnter() !== false){
+          viewEntered = true;
+          setState('entered', time);
+        }
       }
     }
+    flightBatch.update(renderer,camera,state==='flight');
     renderer.render(world, camera);
   }
   return {
     get active() { return state !== 'entered'; },
     get state() { return state; },
+    get progress(){return progress;},
     pointerDown, pointerMove, pointerUp, update,
-    resize() { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); },
+    resize() { camera.aspect = viewSize().width / viewSize().height; camera.updateProjectionMatrix(); },
   };
 }

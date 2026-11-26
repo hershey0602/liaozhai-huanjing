@@ -1,4 +1,4 @@
-import {THREE,group,mesh,cylinder,sphere,curve,mat,glow} from './space-kit.js?build=room-light-68';
+import {THREE,group,mesh,cylinder,sphere,curve,mat,glow} from './space-kit.js?build=wechat-landscape-75';
 import {mergeGeometries} from './assets/utils/BufferGeometryUtils.js';
 
 // Carvings are modelled separately, then share one draw call per material.

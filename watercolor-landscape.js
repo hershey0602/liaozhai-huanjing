@@ -228,7 +228,7 @@ export function addWatercolorShrubs(scene, { ground, pathX, riverX }) {
 }
 
 export function addPaintedHorizons(scene) {
-  const texture = new THREE.TextureLoader().load('./assets/watercolor-mountains.png');
+  const texture = new THREE.TextureLoader().load('./assets/watercolor-mountains.webp');
   texture.colorSpace = THREE.SRGBColorSpace;
   const material = new THREE.MeshBasicMaterial({ map:texture, transparent:true,
     opacity:0.48, color:0xe6dcc7, depthWrite:false, side:THREE.DoubleSide, fog:false,

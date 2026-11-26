@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
         <meta name="theme-color" content="#f0e6d3">
     <title>聊斋幻城 · 书中五境</title>
-    <link rel="stylesheet" href="./spaces.css?build=room-light-68">
+    <link rel="stylesheet" href="./spaces.css?build=wechat-landscape-75">
+    <link rel="stylesheet" href="./mobile-landscape.css?build=wechat-landscape-75">
     <style>
       :root { --ink:#534b42; --green:#665e50; --gold:#9d8061; --paper:#f0e6d3; }
       * { box-sizing:border-box; }
@@ -29,7 +30,7 @@
       .move-controls .left { grid-column:1; grid-row:2; }
       .move-controls .down { grid-column:2; grid-row:2; }
       .move-controls .right { grid-column:3; grid-row:2; }
-      .encounter-caption { position:fixed; z-index:12; left:50%; bottom:72px; transform:translate(-50%,8px); min-width:280px; max-width:min(580px,calc(100vw - 32px)); padding:12px 24px; border:1px solid #b9a79299; border-radius:28px; background:#f8f2e9f5; box-shadow:0 5px 28px #4b3c2a24; color:#4e4035; font-size:18px; letter-spacing:.12em; line-height:1.6; text-align:center; opacity:0; pointer-events:none; transition:opacity .45s ease,transform .45s ease; }
+      .encounter-caption { position:fixed; z-index:12; left:50%; bottom:72px; transform:translate(-50%,8px); min-width:280px; max-width:min(580px,calc(calc(100 * var(--app-vw,1vw)) - 32px)); padding:12px 24px; border:1px solid #b9a79299; border-radius:28px; background:#f8f2e9f5; box-shadow:0 5px 28px #4b3c2a24; color:#4e4035; font-size:18px; letter-spacing:.12em; line-height:1.6; text-align:center; opacity:0; pointer-events:none; transition:opacity .45s ease,transform .45s ease; }
       .encounter-caption.visible { opacity:1; transform:translate(-50%,0); }
       .ancient-tree-tag { position:fixed; z-index:9; left:50%; top:50%; transform:translate(-50%,-100%); padding:6px 11px; border:1px solid #b7a492ad; border-radius:16px; background:#f7f0e6eb; box-shadow:0 3px 14px #4b3c2a1f; color:#6a5148; font-size:14px; letter-spacing:.13em; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .3s ease; }
       .ancient-tree-tag.visible { opacity:1; }
@@ -38,7 +39,7 @@
       .story-progress.visible { opacity:1; }
       .story-marker { position:fixed;z-index:13;transform:translate(-50%,-50%);padding:9px 17px;border:1px solid #aa8d74;border-radius:22px;background:#fff9edeb;color:#564a3e;box-shadow:0 5px 22px #3c332633;cursor:pointer;font-size:15px;white-space:nowrap; }
       .story-marker[hidden] { display:none; }
-      .story-panel { position:fixed;z-index:15;left:50%;bottom:122px;transform:translate(-50%,15px);width:min(540px,calc(100vw - 36px));padding:24px 28px;background:#fbf6ecee;border:1px solid #bbaa91;border-radius:12px;box-shadow:0 12px 42px #362d213b;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s; }
+      .story-panel { position:fixed;z-index:15;left:50%;bottom:122px;transform:translate(-50%,15px);width:min(540px,calc(calc(100 * var(--app-vw,1vw)) - 36px));padding:24px 28px;background:#fbf6ecee;border:1px solid #bbaa91;border-radius:12px;box-shadow:0 12px 42px #362d213b;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s; }
       .story-panel.visible { opacity:1;pointer-events:auto;transform:translate(-50%,0); }
       .story-panel .story-title { color:#98745d;font-size:15px;letter-spacing:.2em; }
       .story-panel .story-text { margin:12px 0 20px;color:#4d4237;font-size:20px;line-height:1.7; }
@@ -46,8 +47,8 @@
       .story-ending { position:fixed;z-index:20;inset:0;display:grid;place-items:center;background:#090a0a;opacity:0;visibility:hidden;transition:opacity 2.5s,visibility 2.5s; }
       .story-ending.visible { opacity:1;visibility:visible; }
       .story-ending .book { padding:34px 28px;border:1px solid #9c8460;background:#302b27;box-shadow:12px 15px 35px #000;color:#d9c9a7;font-size:31px;letter-spacing:.3em;writing-mode:vertical-rl; }
-      .story-ending p { position:absolute;bottom:9vh;color:#d9c9a7;font-size:20px;letter-spacing:.18em;text-align:center; }
-      .story-ending button { position:absolute;bottom:4vh;border:1px solid #ad9673;border-radius:17px;padding:5px 18px;background:#282521;color:#d9c9a7;cursor:pointer; }
+      .story-ending p { position:absolute;bottom:calc(9 * var(--app-vh,1vh));color:#d9c9a7;font-size:20px;letter-spacing:.18em;text-align:center; }
+      .story-ending button { position:absolute;bottom:calc(4 * var(--app-vh,1vh));border:1px solid #ad9673;border-radius:17px;padding:5px 18px;background:#282521;color:#d9c9a7;cursor:pointer; }
       body.prologue-active, body.prologue-active #stage { background:#030405; }
       body.prologue-active .topbar, body.prologue-active .legend,
       body.prologue-active .hint, body.prologue-active .move-controls,
@@ -55,7 +56,7 @@
       body.prologue-active .encounter-caption, body.prologue-active .ancient-tree-tag,
       body.prologue-active .story-progress, body.prologue-active .story-marker,
       body.prologue-active .story-panel { display:none; }
-      .prologue-ui { position:fixed; z-index:13; inset:auto 0 7vh; text-align:center; color:#d7c7a7;
+      .prologue-ui { position:fixed; z-index:13; inset:auto 0 calc(7 * var(--app-vh,1vh)); text-align:center; color:#d7c7a7;
         pointer-events:none; opacity:0; transition:opacity 1s ease; text-shadow:0 1px 16px #000; }
       body.prologue-active.prologue-revealed .prologue-ui { opacity:1; }
       .prologue-ui .eyebrow { font-size:12px; letter-spacing:.55em; color:#95866d; }
@@ -64,7 +65,7 @@
       .arrival-veil { position:fixed; z-index:14; inset:0; pointer-events:none; visibility:hidden;
         opacity:0; background:#f0e6d3; }
       body.arrival .arrival-veil { visibility:visible; opacity:1; }
-      body.arrival.arrival-clearing .arrival-veil { opacity:0; transition:opacity 1.45s ease; }
+      body.arrival.arrival-clearing .arrival-veil { opacity:0; transition:opacity .55s ease; }
       body.arrival-observe .move-controls { opacity:.48; pointer-events:none; }
       @media(max-width:700px) {
         .topbar { top:15px; left:15px; right:15px; }
@@ -77,9 +78,15 @@
         .ancient-tree-tag { font-size:12px; padding:5px 8px; }
       }
     </style>
-    <script type="importmap">{"imports":{"three":"./assets/three.module.js"}}</script>
+    <script type="importmap">{"imports":{"three":"./assets/three.module.js?build=wechat-landscape-75"}}</script>
+    <link rel="modulepreload" href="./assets/three.module.js?build=wechat-landscape-75">
+    <link rel="modulepreload" href="./assets/three.core.js?build=wechat-landscape-75">
+    <link rel="modulepreload" href="./prologue.js?build=wechat-landscape-75">
+    <link rel="preload" as="image" href="./assets/liaozhai-reference-book.jpg">
+    <style>.startup-loading{position:fixed;inset:0;display:grid;place-items:center;z-index:25;pointer-events:none;color:#a99a7e;font:17px KaiTi,serif;letter-spacing:.2em;background:#030405;}</style>
   </head>
   <body class="prologue-active">
+    <div class="startup-loading" id="startup-loading" role="status">正在展开书卷…</div>
     <main id="stage" aria-label="用汉字构成的聊斋三维山谷"></main>
     <div class="prologue-ui" aria-live="polite">
       <div class="eyebrow">序 · 开卷</div>
@@ -103,13 +110,13 @@
       <p class="story-text" id="story-text"></p>
       <button id="story-next">继续</button>
     </section>
-    <div class="story-ending" id="story-ending"><div class="book">聊斋志异</div><p>知我者，其在青林黑塞间乎。</p><button id="story-replay">再翻一遍</button><a class="next-space" href="?space=palace&v=room-light-68">随书入海 · 玄溟鲛宫</a></div>
+    <div class="story-ending" id="story-ending"><div class="book">聊斋志异</div><p>知我者，其在青林黑塞间乎。</p><button id="story-replay">再翻一遍</button><a class="next-space" href="?space=palace&v=wechat-landscape-75">随书入海 · 玄溟鲛宫</a></div>
     <div class="move-controls" aria-label="移动控制">
       <button class="up" data-direction="forward" aria-label="向前">↑</button>
       <button class="left" data-direction="left" aria-label="向左">←</button>
       <button class="down" data-direction="back" aria-label="后退">↓</button>
       <button class="right" data-direction="right" aria-label="向右">→</button>
     </div>
-<script type="module" src="./journey.js?build=room-light-68"></script>
+<script type="module" src="./journey.js?build=wechat-landscape-75"></script>
   </body>
 </html>

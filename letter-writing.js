@@ -1,3 +1,4 @@
+import {viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
 export function createLetterWriting(kit,onComplete){
   const modal=document.createElement('section');modal.className='letter-modal';modal.hidden=true;
   modal.setAttribute('aria-label','信笺台 · 愿赴尘缘');modal.innerHTML=`
@@ -11,7 +12,7 @@ export function createLetterWriting(kit,onComplete){
   const canvas=modal.querySelector('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
   const stamp=modal.querySelector('.dragon-seal'),target=modal.querySelector('.seal-target');
   const status=modal.querySelector('[data-trace-status]');let drawing=false,eraser=false,last=null,drag=null,selected=false,done=false;
-  function point(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*canvas.width,y:(e.clientY-r.top)/r.height*canvas.height};}
+  function point(e){e=viewPointer(e);const r=viewRect(canvas);return{x:(e.clientX-r.left)/r.width*canvas.width,y:(e.clientY-r.top)/r.height*canvas.height};}
   function coverage(){const d=ctx.getImageData(0,0,1000,238).data,counts=[0,0,0,0];for(let y=0;y<238;y+=2)for(let x=0;x<1000;x+=2)if(d[(y*1000+x)*4+3]>40)counts[Math.min(3,Math.floor(x/250))]++;const traced=counts.filter(n=>n>55).length;
     stamp.disabled=traced<4;status.textContent=traced===4?'四字已落墨 · 请将龙印落在右侧印位':`落墨 ${traced} / 4`;}
   canvas.addEventListener('pointerdown',e=>{e.preventDefault();drawing=true;last=point(e);canvas.setPointerCapture(e.pointerId);});
@@ -22,9 +23,9 @@ export function createLetterWriting(kit,onComplete){
   function close(){modal.hidden=true;kit.locked=false;}
   modal.querySelector('.letter-close').onclick=close;
   function finish(){if(done||stamp.disabled)return;done=true;target.classList.add('stamped');target.textContent='两地同心';modal.querySelector('[data-seal-hint]').textContent='一笺落印，情义长存。';kit.chime([523,659,784]);setTimeout(()=>{close();onComplete();},1100);}
-  stamp.addEventListener('pointerdown',e=>{if(stamp.disabled)return;e.preventDefault();drag={x:e.clientX,y:e.clientY};stamp.setPointerCapture(e.pointerId);selected=true;});
-  stamp.addEventListener('pointermove',e=>{if(drag)stamp.style.transform=`translate(${e.clientX-drag.x}px,${e.clientY-drag.y}px) rotate(-5deg)`;});
-  stamp.addEventListener('pointerup',e=>{if(!drag)return;const r=target.getBoundingClientRect();if(e.clientX>r.left-15&&e.clientX<r.right+15&&e.clientY>r.top-15&&e.clientY<r.bottom+15)finish();drag=null;stamp.style.transform='';});
+  stamp.addEventListener('pointerdown',e=>{e=viewPointer(e);if(stamp.disabled)return;e.preventDefault();drag={x:e.clientX,y:e.clientY};stamp.setPointerCapture(e.pointerId);selected=true;});
+  stamp.addEventListener('pointermove',e=>{e=viewPointer(e);if(drag)stamp.style.transform=`translate(${e.clientX-drag.x}px,${e.clientY-drag.y}px) rotate(-5deg)`;});
+  stamp.addEventListener('pointerup',e=>{e=viewPointer(e);if(!drag)return;const r=viewRect(target);if(e.clientX>r.left-15&&e.clientX<r.right+15&&e.clientY>r.top-15&&e.clientY<r.bottom+15)finish();drag=null;stamp.style.transform='';});
   stamp.addEventListener('pointercancel',()=>{drag=null;stamp.style.transform='';});
   stamp.addEventListener('click',()=>{selected=true;});target.onclick=()=>{if(selected)finish();};
   return {open(){modal.hidden=false;kit.locked=true;coverage();},get completed(){return done;}};

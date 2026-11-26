@@ -1,3 +1,4 @@
+import {viewSize,viewPointer,viewRect} from './view-viewport.js?build=wechat-landscape-75';
 import * as THREE from 'three';
 
 // The encounter is a short chapter with physical clues and a readable dialogue
@@ -9,7 +10,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
   const next = document.getElementById('story-next');
   const progress = document.getElementById('story-progress');
   const ending = document.getElementById('story-ending');
-  document.getElementById('story-replay').addEventListener('click',()=>{ location.href=location.pathname+'?space=prologue&v=room-light-68'; });
+  document.getElementById('story-replay').addEventListener('click',()=>{ location.href=location.pathname+'?space=prologue&v=wechat-landscape-75'; });
   const marker = document.getElementById('story-marker');
   const hint = document.querySelector('.hint');
   const worldPoint = new THREE.Vector3();
@@ -74,7 +75,7 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
     ending.querySelector('button').hidden=true;
     const shortcut=ending.querySelector('.next-space');if(shortcut)shortcut.hidden=true;
     ending.classList.add('visible');
-    setTimeout(()=>{location.href='?space=palace&v=room-light-68';},2600);
+    setTimeout(()=>{location.href='?space=palace&v=wechat-landscape-75';},2600);
   }
   function show(lines, done) {
     state.lines=lines;state.index=0;state.done=done;state.active=true;
@@ -141,8 +142,8 @@ export function createYingningStory({ scene, camera, tree, characterPosition, gr
       marker.hidden=worldPoint.z<0 || worldPoint.z>1 || Math.abs(worldPoint.x)>.95 || Math.abs(worldPoint.y)>.88;
       marker.textContent=state.stage===1?'拾起梅枝':state.stage===2?'坐于茶席':'递出梅枝';
       if(!marker.hidden){
-        marker.style.left=`${(worldPoint.x*.5+.5)*innerWidth}px`;
-        marker.style.top=`${(-worldPoint.y*.5+.5)*innerHeight}px`;
+        marker.style.left=`${(worldPoint.x*.5+.5)*viewSize().width}px`;
+        marker.style.top=`${(-worldPoint.y*.5+.5)*viewSize().height}px`;
       }
     } else if(state.stage===5){
       marker.hidden=false;marker.textContent='沿花径离开 · 返回书页';

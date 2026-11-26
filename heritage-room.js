@@ -1,7 +1,7 @@
-import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,plaque,calligraphy,glow} from './space-kit.js?build=room-light-68';
-import {historicSurfaces,finishHistoricLighting} from './heritage-finishes.js?build=room-light-68';
-import {interiorPalette} from './scene-finishes.js?build=room-light-68';
-import {bakeCarvings} from './royal-fittings.js?build=room-light-68';
+import {THREE,seeded,mat,group,mesh,box,cylinder,sphere,curve,plaque,calligraphy,glow} from './space-kit.js?build=wechat-landscape-75';
+import {historicSurfaces,finishHistoricLighting} from './heritage-finishes.js?build=wechat-landscape-75';
+import {interiorPalette} from './scene-finishes.js?build=wechat-landscape-75';
+import {bakeCarvings} from './royal-fittings.js?build=wechat-landscape-75';
 
 function texture(draw,size=512){const c=document.createElement('canvas');c.width=c.height=size;draw(c.getContext('2d'),size);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;}
 export function heritageRoom(k){
